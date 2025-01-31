@@ -29,7 +29,7 @@ const multerFilter = (req, file, cb) => {
   ]);
   
  // Middleware to resize and retain the original format
- exports.resizeNewsImages = catchAsync(async (req, res, next) => {
+ exports.resizeProductsImages = catchAsync(async (req, res, next) => {
    console.log("Files received:", req.files); // ✅ Log incoming files
  
    if (!req.files || (!req.files.thumbnail && !req.files.images)) return next();
