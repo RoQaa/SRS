@@ -1,26 +1,6 @@
 import SingleNewsContainer from "@/Components/News/SingleNewsContainer/SingleNewsContainer";
-
-const fetchSeo = async (slug: string) => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/seo/findByPage/${slug}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      console.error("Failed to fetch SEO data:", res.status, res.statusText);
-      return null;
-    }
-
-    const seoData = await res.json();
-    return seoData.data;
-  } catch (error) {
-    console.error("Error fetching or parsing SEO data:", error);
-    return null;
-  }
-};
+import SEOUpdater from "@/Components/SEOUpdater";
+import { INews } from "@/interfaces/News.interface";
 
 export async function generateMetadata({
   params,
@@ -28,70 +8,85 @@ export async function generateMetadata({
   params: { locale: string; slug: string };
 }) {
   const currentLocale = params.locale;
-  const slug = params.slug;
+  const baseUrl = new URL(process.env.NEXT_PUBLIC_URI as string);
 
-  // Fetch SEO data
-  const seo = await fetchSeo(slug);
-
-  // Default metadata if fetching fails
-  const defaultMetadata = {
+  return {
+    metadataBase: baseUrl,
     title: currentLocale === "en" ? "Latest News" : "آخر الأخبار",
     description:
       currentLocale === "en"
-        ? "Stay updated with the latest news and insights from our company."
-        : "ابق على اطلاع بآخر الأخبار والرؤى من شركتنا.",
+        ? "Stay updated with the latest news and announcements from My Website."
+        : "ابق على اطلاع بآخر الأخبار والإعلانات من موقعنا.",
     keywords:
       currentLocale === "en"
-        ? "news, updates, articles, company"
-        : "الأخبار, التحديثات, المقالات, الشركة",
-  };
-
-  // Construct metadata based on availability of SEO data
-  const metadata: Record<string, unknown> = {
-    title: seo
-      ? currentLocale === "en"
-        ? seo.title_en
-        : seo.title_ar
-      : defaultMetadata.title,
-    description: seo
-      ? currentLocale === "en"
-        ? seo.meta_description_en
-        : seo.meta_description_ar
-      : defaultMetadata.description,
-    keywords: seo
-      ? currentLocale === "en"
-        ? seo.keywords_en
-        : seo.keywords_ar
-      : defaultMetadata.keywords,
-  };
-
-  // Add Open Graph metadata only if SEO data includes an image
-  if (seo?.og_image) {
-    metadata.openGraph = {
-      title: currentLocale === "en" ? seo.og_title_en : seo.og_title_ar,
+        ? "news, updates, announcements, latest"
+        : "أخبار, تحديثات, إعلانات, آخر الأخبار",
+    openGraph: {
+      title: currentLocale === "en" ? "Latest News" : "آخر الأخبار",
       description:
-        currentLocale === "en" ? seo.og_description_en : seo.og_description_ar,
-      url: `${process.env.NEXT_PUBLIC_URI}/${currentLocale}/news/${slug}`,
+        currentLocale === "en"
+          ? "Stay updated with the latest news and announcements from My Website."
+          : "ابق على اطلاع بآخر الأخبار والإعلانات من موقعنا.",
+      url: new URL(`/${currentLocale}/news/${params.slug}`, baseUrl).toString(),
       images: [
         {
-          url: seo.og_image,
+          url: "/default-news-og-image.jpg",
           width: 1200,
           height: 630,
-          alt: currentLocale === "en" ? seo.title_en : seo.title_ar,
+          alt: currentLocale === "en" ? "Latest News" : "آخر الأخبار",
         },
       ],
-    };
-  }
-
-  return metadata;
+      locale: currentLocale,
+      type: "website",
+      // Add Arabic locale support
+      ...(currentLocale === "ar" && {
+        "ar:locale": "ar_AR",
+        "ar:title": "آخر الأخبار",
+        "ar:description": "ابق على اطلاع بآخر الأخبار والإعلانات من موقعنا.",
+      }),
+    },
+  };
 }
 
+export async function generateStaticParams() {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/edit-website/news`,
+      {
+        cache: "no-cache",
+      }
+    );
 
-const SingleNewsPage = ({ params, searchParams }: { params: { slug: string, locale: string },searchParams: { id?: string } }) => {
+    if (!response.status) {
+      throw new Error(`Failed to fetch news: ${response.status}`);
+    }
+
+    const { data } = await response.json();
+
+    // Return both `slug` and `id` for dynamic routes
+    return data.flatMap((news: INews) => [
+      { slug: news.slug, locale: "en" }, // English version
+      { slug: news.slug_ar, locale: "ar" }, // Arabic version
+    ]);
+  } catch (error) {
+    console.error("Error in generateStaticParams:", error);
+    return [];
+  }
+}
+
+const SingleNewsPage = ({
+  params,
+}: {
+  params: { slug: string; locale: string };
+}) => {
   const { slug, locale } = params;
-  const { id } = searchParams;
 
-  return <SingleNewsContainer slug={slug} locale={locale} id={String(id)} />;
+  return (
+    <>
+      <SEOUpdater page={slug} locale={locale} />
+      <SingleNewsContainer slug={slug} locale={locale} />
+    </>
+  );
 };
 
 export default SingleNewsPage;

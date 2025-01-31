@@ -15,6 +15,7 @@ import {
 } from "@/Redux/Reducers/ProductsSlice";
 import { useEffect, useState } from "react";
 import { Col, Spinner } from "reactstrap";
+import { useLocale } from "next-intl";
 
 interface EditProductFormProps {
   slug: string;
@@ -23,6 +24,7 @@ interface EditProductFormProps {
 const EditProductForm: React.FC<EditProductFormProps> = ({ slug }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const locale = useLocale();
   const { formValues, loading} = useAppSelector(
     (state) => state.products
   ) as { formValues: IProduct; loading: boolean; error: string | null };
@@ -78,7 +80,7 @@ const EditProductForm: React.FC<EditProductFormProps> = ({ slug }) => {
       ).unwrap();
       if (resultAction.status) {
         toast.success("Product updated successfully!");
-        router.push("/dashboard/products/");
+        router.push(`/${locale}/dashboard/products/`);
       }
     } catch (error) {
       if(error instanceof Error) {

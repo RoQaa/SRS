@@ -8,9 +8,11 @@ import DataSourceTable from "@/Components/Dashboard/DataSourceTable";
 import { useAppSelector, useAppDispatch } from "@/Redux/Hooks";
 import { fetchScopes, deleteScope } from "@/Redux/Reducers/ScopeSlice";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 const ScopeListContainer = () => {
   const dispatch = useAppDispatch();
+  const locale = useLocale();
   const { scopesData, activeTab, loading, error } = useAppSelector(
     (state) => state.scopes
   );
@@ -100,7 +102,7 @@ const ScopeListContainer = () => {
           <li className="edit">
             <Link
               prefetch={false}
-              href={`${process.env.NEXT_PUBLIC_URI}/dashboard/edit-scope/${row.slug}?id=${row._id}`}
+              href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/edit-scope/edit?id=${row._id}`}
             >
               <i className="icon-pencil-alt" />
             </Link>

@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@/Redux/Hooks";
 import { setActiveTab } from "@/Redux/Reducers/UserSlice";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { CheckCircle, Info, PlusSquare, Users } from "react-feather";
 import { Button, Card, Col, Nav, NavItem, NavLink, Row } from "reactstrap";
@@ -10,6 +11,7 @@ interface UsersListHeadProps {
 
 export const UsersListHead: React.FC<UsersListHeadProps> = ({ activeTab }) => {
   const dispatch = useAppDispatch();
+  const locale = useLocale();
   return (
     <Card>
       <Row>
@@ -60,7 +62,7 @@ export const UsersListHead: React.FC<UsersListHeadProps> = ({ activeTab }) => {
         <Col>
           <Button className="float-end" color="primary">
             <Link
-              href={`${process.env.NEXT_PUBLIC_URI}/dashboard/users/add`}
+              href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/users/add`}
               className="text-white text-light"
             >
               <PlusSquare className="me-1" />

@@ -1,7 +1,7 @@
 import NewCarouselContainer from "@/Components/Dashboard/MainCarousels/NewCarousel";
 
 const AddMainCarouselPage = () => {
-  return <NewCarouselContainer id="" />;
+  return <NewCarouselContainer />;
 };
 
 export default AddMainCarouselPage;

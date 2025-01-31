@@ -3,8 +3,11 @@ import React from "react";
 import { Card, CardBody, Col, Container, Row } from "reactstrap";
 import CreateValuesForm from "./CreateValuesForm";
 import EditValuesForm from "./EditValuesForm";
+import { useSearchParams } from "next/navigation";
 
-const ValuesFormContainer = ({ id = "" }: { id: string }) => {
+const ValuesFormContainer = () => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   return (
     <Container fluid>
       <Row>

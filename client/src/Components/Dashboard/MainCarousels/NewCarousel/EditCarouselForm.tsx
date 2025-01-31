@@ -17,12 +17,14 @@ import {
 } from "@/Redux/Reducers/MainCarouselsSlice";
 import { useEffect } from "react";
 import { CardBody, Spinner } from "reactstrap";
+import { useLocale } from "next-intl";
 
 const EditCarouselForm = ({ id }: { id: string }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const currentCarousel = useAppSelector(selectCurrentCarousel);
   const carouselLoading = useAppSelector(selectCarouselLoading);
+  const locale = useLocale();
 
   useEffect(() => {
     if (id) {
@@ -61,7 +63,7 @@ const EditCarouselForm = ({ id }: { id: string }) => {
 
       if (res.status) {
         toast.success("Carousel Updated successfully!");
-        router.push("/dashboard/edit-home/main-carousels/");
+        router.push(`/${locale}/dashboard/edit-home/main-carousels/`);
       } else {
         toast.error(res.message || "Error Updating Carousel.");
       }

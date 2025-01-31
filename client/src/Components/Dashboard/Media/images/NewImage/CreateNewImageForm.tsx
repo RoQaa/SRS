@@ -11,11 +11,13 @@ import { useAppDispatch } from "@/Redux/Hooks";
 import { addMediaItem } from "@/Redux/Reducers/MediaSlice";
 import { IMedia } from "@/interfaces/Media.interface";
 import { LinkSection } from "./LinkSection";
+import { useLocale } from "next-intl";
 
 const CreateNewImageForm = ({ type }: { type: string }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-
+  const locale = useLocale();
+  
   const initialFormValues = {
     title: "",
     title_ar: "",
@@ -62,9 +64,9 @@ const CreateNewImageForm = ({ type }: { type: string }) => {
       await dispatch(addMediaItem(formData)).unwrap();
       toast.success("Media Created successfully!");
       if (type === "Image") {
-        router.push("/dashboard/media/images");
+        router.push(`/${locale}/dashboard/media/images`);
       } else {
-        router.push("/dashboard/media/videos");
+        router.push(`/${locale}/dashboard/media/videos`);
       }
     } catch (error) {
       if(error instanceof Error){

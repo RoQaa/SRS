@@ -1,3 +1,4 @@
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { Button, Col, Row } from "reactstrap";
 
@@ -8,6 +9,7 @@ export const ButtonSection = ({
   id: string;
   type: string;
 }) => {
+  const locale = useLocale();
   return (
     <Row>
       <Col>
@@ -18,9 +20,9 @@ export const ButtonSection = ({
           <Link
             className="btn btn-danger"
             href={
-              type === "image"
-                ? `${process.env.NEXT_PUBLIC_URI}/dashboard/media/images/`
-                : `${process.env.NEXT_PUBLIC_URI}/dashboard/media/videos/`
+              type === "Image"
+                ? `${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/media/images/`
+                : `${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/media/videos/`
             }
           >
             Cancel

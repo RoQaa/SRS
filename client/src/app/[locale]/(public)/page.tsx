@@ -7,6 +7,7 @@ import Contact from "@/Components/Contact";
 import News from "@/Components/News";
 import dynamic from "next/dynamic";
 
+
 const fetchSeo = async () => {
   try {
     const res = await fetch(
@@ -61,6 +62,7 @@ export async function generateMetadata({
 const Products = dynamic(() => import("@/Components/Products"), {
   ssr: false,
 });
+
 
 export default function Home() {
   return (

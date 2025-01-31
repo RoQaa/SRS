@@ -1,7 +1,5 @@
 import "@/index.scss";
 import NoSsr from "@/utils/NoSsr";
-import { I18nProvider } from "@/app/i18n//i18n-context";
-import { detectLanguage } from "@/app/i18n/server";
 import Head from "next/head";
 import { ToastContainer } from "react-toastify";
 
@@ -10,10 +8,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const lng = await detectLanguage();
 
   return (
-    <I18nProvider language={lng}>
       <html>
         <Head>
           <link
@@ -46,6 +42,5 @@ export default async function RootLayout({
             </NoSsr>
         </body>
       </html>
-    </I18nProvider>
   );
 }

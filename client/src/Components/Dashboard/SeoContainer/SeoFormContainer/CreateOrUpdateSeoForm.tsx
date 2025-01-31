@@ -13,6 +13,7 @@ import {
   SeoData,
 } from "@/Redux/Reducers/SeoSlice";
 import UploadImage from "./UploadImage";
+import { useLocale } from "next-intl";
 
 interface CreateNewProjectFormProps {
   page: string;
@@ -24,6 +25,7 @@ const CreateOrUpdateSeoForm: React.FC<CreateNewProjectFormProps> = ({
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { seoData, loading } = useAppSelector((state) => state.seo);
+  const locale = useLocale();
 
   useEffect(() => {
     const fetchSeo = async () => {
@@ -95,7 +97,7 @@ const CreateOrUpdateSeoForm: React.FC<CreateNewProjectFormProps> = ({
           toast.success("SEO Created successfully!");
         }
       }
-      router.push(`/dashboard/seo/`);
+      router.push(`/${locale}/dashboard/seo/`);
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -120,8 +122,14 @@ const CreateOrUpdateSeoForm: React.FC<CreateNewProjectFormProps> = ({
       160,
       "Meta description cannot exceed 160 characters."
     ),
-    keywords_en: Yup.string(),
-    keywords_ar: Yup.string(),
+    keywords_en: Yup.mixed()
+    .test("is-string-or-array", "Keywords In English must be a string separated by comma ", (value) => {
+      return typeof value === "string" || (Array.isArray(value) && value.every((item) => typeof item === "string"));
+    }),
+    keywords_ar: Yup.mixed()
+    .test("is-string-or-array", "Keywords In Arabic must be a string separated by comma ", (value) => {
+      return typeof value === "string" || (Array.isArray(value) && value.every((item) => typeof item === "string"));
+    }),
     og_title_en: Yup.string(),
     og_title_ar: Yup.string(),
     og_description_en: Yup.string(),

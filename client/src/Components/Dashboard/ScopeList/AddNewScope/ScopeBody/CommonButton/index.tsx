@@ -6,11 +6,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button } from "reactstrap";
 import Cookies from "js-cookie";
+import { useLocale } from "next-intl";
 
 const CommonButtonScope = () => {
   const { navId, formValue, tabId } = useAppSelector((state) => state.addScope);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const locale = useLocale();
 
   const submitFormData = async (formData: FormData) => {
     try {
@@ -27,7 +29,7 @@ const CommonButtonScope = () => {
 
       if (response.ok) {
         toast.success("Scope added successfully!");
-        router.push(`/dashboard/edit-scope/`);
+        router.push(`/${locale}/dashboard/edit-scope/`);
         dispatch(resetForm());
         dispatch(setNavId(1));
       } else {

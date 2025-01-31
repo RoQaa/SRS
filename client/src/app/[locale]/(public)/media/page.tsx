@@ -1,30 +1,5 @@
 import MediaContainer from "@/Components/MediaContainer/MediaContainer";
-
-
-const fetchSeo = async () => {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/seo/findByPage/media`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      }
-    );
-
-    if (!res.ok) {
-      console.error("Failed to fetch SEO data:", res.status, res.statusText);
-      return null;
-    }
-
-    const seoData = await res.json();
-    return seoData.data;
-  } catch (error) {
-    console.error("Error fetching or parsing SEO data:", error);
-    return null;
-  }
-};
+import SEOUpdater from "@/Components/SEOUpdater";
 
 export async function generateMetadata({
   params,
@@ -32,68 +7,54 @@ export async function generateMetadata({
   params: { locale: string };
 }) {
   const currentLocale = params.locale;
+  const baseUrl = new URL(process.env.NEXT_PUBLIC_URI as string);
 
-  // Fetch SEO data
-  const seo = await fetchSeo();
-
-  // Default metadata if fetching fails
-  const defaultMetadata = {
-    title: currentLocale === "en" ? "Media" : "الوسائط",
-    description:
-      currentLocale === "en"
-        ? "Discover the latest media content, news, and updates from our company."
-        : "اكتشف أحدث محتويات وسائل الإعلام والأخبار والتحديثات من شركتنا.",
-    keywords:
-      currentLocale === "en"
-        ? "media, news, updates, company"
-        : "وسائل الإعلام, الأخبار, التحديثات, الشركة",
-  };
-
-  // Construct metadata based on availability of SEO data
-  const metadata: Record<string, unknown> = {
-    title: seo
-      ? currentLocale === "en"
-        ? seo.title_en
-        : seo.title_ar
-      : defaultMetadata.title,
-    description: seo
-      ? currentLocale === "en"
-        ? seo.meta_description_en
-        : seo.meta_description_ar
-      : defaultMetadata.description,
-    keywords: seo
-      ? currentLocale === "en"
-        ? seo.keywords_en
-        : seo.keywords_ar
-      : defaultMetadata.keywords,
-  };
-
-  // Add Open Graph metadata only if SEO data includes an image
-  if (seo?.og_image) {
-    metadata.openGraph = {
-      title: currentLocale === "en" ? seo.og_title_en : seo.og_title_ar,
-      description:
-        currentLocale === "en" ? seo.og_description_en : seo.og_description_ar,
-      url: `${process.env.NEXT_PUBLIC_URI}/${currentLocale}/media`,
+  return {
+    metadataBase: baseUrl,
+    title: currentLocale === "en" 
+      ? "Media" 
+      : "الإعلامي",
+    description: currentLocale === "en"
+      ? "Explore our latest media resources, press releases, and news coverage."
+      : "استكشف أحدث الموارد الإعلامية والبيانات الصحفية والتغطية الإخبارية الخاصة بنا.",
+    keywords: currentLocale === "en"
+      ? ["media center", "press releases", "news coverage", "media resources"]
+      : ["المركز الإعلامي", "البيانات الصحفية", "التغطية الإخبارية", "الموارد الإعلامية"],
+    openGraph: {
+      title: currentLocale === "en" 
+        ? "Media Center" 
+        : "المركز الإعلامي",
+      description: currentLocale === "en"
+        ? "Access our media library, press kits, and official communications."
+        : "تصفح مكتبتنا الإعلامية والأدلة الصحفية والبيانات الرسمية.",
+      url: new URL(`/${currentLocale}/media`, baseUrl).toString(),
       images: [
         {
-          url: seo.og_image,
+          url: '/media-og-image.jpg',
           width: 1200,
           height: 630,
-          alt: currentLocale === "en" ? seo.title_en : seo.title_ar,
+          alt: currentLocale === "en" 
+            ? "Media Center Overview" 
+            : "نظرة عامة على المركز الإعلامي",
         },
       ],
-    };
-  }
-
-  return metadata;
+      locale: currentLocale,
+      type: 'website',
+      ...(currentLocale === 'ar' && {
+        'ar:locale': 'ar_AR',
+        'ar:title': "المركز الإعلامي",
+        'ar:description': "الوصول إلى المواد الإعلامية والبيانات الرسمية"
+      })
+    }
+  };
 }
 
-
-const MediaPage = () => {
-
+const MediaPage = ({params}: {params: {locale: string}}) => {
   return (
-    <MediaContainer />
+    <>
+      <SEOUpdater page="media" locale={params.locale} />
+      <MediaContainer />
+    </>
   );
 };
 

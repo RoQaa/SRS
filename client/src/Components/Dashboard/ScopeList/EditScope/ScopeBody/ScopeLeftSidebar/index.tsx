@@ -1,12 +1,12 @@
 import SVG from "@/CommonComponent/SVG";
-import { EditScopeNav } from "@/Data/Application/Ecommerce"; // Adjusted to use editScopeNav data
+import { EditScopeNav } from "@/Data/Application/Ecommerce";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { setNavId } from "@/Redux/Reducers/EditScopeSlice"; // Updated to use EditScopeSlice
+import { setNavId } from "@/Redux/Reducers/EditScopeSlice";
 import { Col, Nav, NavItem, NavLink } from "reactstrap";
 
 const EditScopeSidebar = () => {
   // Renamed to reflect editing scope
-  const { navId } = useAppSelector((state) => state.editScope); // Accessing the editScope state
+  const { navId } = useAppSelector((state) => state.editScope);
   const dispatch = useAppDispatch();
 
   return (

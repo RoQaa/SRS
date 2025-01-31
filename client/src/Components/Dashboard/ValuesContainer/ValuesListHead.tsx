@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@/Redux/Hooks";
 import { setActiveTab } from "@/Redux/Reducers/ValuesSlice";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { CheckCircle, Info, PlusSquare, Target } from "react-feather";
 import { Card, Col, Nav, NavItem, NavLink, Row } from "reactstrap";
@@ -12,6 +13,7 @@ export const ValuesListHead: React.FC<ValuesListHeadProps> = ({
   activeTab,
 }) => {
   const dispatch = useAppDispatch();
+  const locale = useLocale();
 
   return (
     <Card>
@@ -53,7 +55,7 @@ export const ValuesListHead: React.FC<ValuesListHeadProps> = ({
         <Col md="6" className="text-end">
           <Link
             className="btn btn-primary"
-            href={`${process.env.NEXT_PUBLIC_URI}/dashboard/edit-home/values/add`}
+            href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/edit-home/values/add`}
           >
             <PlusSquare />
             Add Value

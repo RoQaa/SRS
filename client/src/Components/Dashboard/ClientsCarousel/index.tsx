@@ -4,12 +4,14 @@ import { DescriptionMyGallery } from "./DescriptionMyGallery";
 import { PlusSquare } from "react-feather";
 import { useRouter } from "next/navigation";
 import CommonCarouselHeader from "../CommonCarouselHeader";
+import { useLocale } from "next-intl";
 
 const ClientsCarouselContainer = () => {
   const router = useRouter();
-
+  const locale = useLocale();
+  
   const handleButtonClick = () => {
-    router.push("/dashboard/edit-home/clients-carousel/add");
+    router.push(`/${locale}/dashboard/edit-home/clients-carousel/add`);
   };
 
   return (

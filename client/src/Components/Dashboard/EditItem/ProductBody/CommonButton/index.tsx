@@ -3,6 +3,7 @@ import { Previous } from "@/Constant";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { setNavId, setTabId } from "@/Redux/Reducers/EditNewsSlice";
 import { updateNews } from "@/Redux/Reducers/NewsSlice";
+import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button } from "reactstrap";
@@ -12,6 +13,7 @@ const CommonButton = ({ slug }: { slug: string }) => {
   const { navId, formValue, tabId } = useAppSelector((state) => state.editNews);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const locale = useLocale();
 
   const submitFormData = async (formData: FormData) => {
     try {
@@ -19,7 +21,7 @@ const CommonButton = ({ slug }: { slug: string }) => {
 
       if (response.status === true) {
         toast.success("News updated successfully!");
-        router.push(`/dashboard/news/`);
+        router.push(`/${locale}/dashboard/news/`);
         dispatch(setNavId(1));
       } else {
         const errorData = response.error.message;

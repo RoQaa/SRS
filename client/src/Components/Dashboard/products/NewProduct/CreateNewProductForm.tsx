@@ -10,12 +10,14 @@ import * as Yup from "yup";
 import { useAppDispatch } from "@/Redux/Hooks";
 import { IProduct } from "@/interfaces/Products.interface";
 import { createProduct } from "@/Redux/Reducers/ProductsSlice";
+import { useLocale } from "next-intl";
 
 type IProductForm = Omit<IProduct, "slug" | "slug_ar" | "_id">;
 
 const CreateNewProductForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const locale = useLocale()
 
   const initialFormValues: IProductForm = {
     name: "",
@@ -63,7 +65,7 @@ const CreateNewProductForm = () => {
     try {
       await dispatch(createProduct(formData)).unwrap();
       toast.success("Product Created successfully!");
-      router.push("/dashboard/products/");
+      router.push(`/${locale}/dashboard/products/`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         toast.error(error?.message || "Error Creating Product.");

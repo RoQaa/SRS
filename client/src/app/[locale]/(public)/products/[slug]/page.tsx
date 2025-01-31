@@ -1,29 +1,6 @@
 import SingleProduct from "@/Components/Products/SubPage";
-
-const fetchSeo = async (slug: string) => {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/seo/findByPage/${slug}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      }
-    );
-
-    if (!res.ok) {
-      console.error("Failed to fetch SEO data:", res.status, res.statusText);
-      return null;
-    }
-
-    const seoData = await res.json();
-    return seoData.data;
-  } catch (error) {
-    console.error("Error fetching or parsing SEO data:", error);
-    return null;
-  }
-};
+import SEOUpdater from "@/Components/SEOUpdater";
+import { IProduct } from "@/interfaces/Products.interface";
 
 export async function generateMetadata({
   params,
@@ -31,62 +8,75 @@ export async function generateMetadata({
   params: { locale: string; slug: string };
 }) {
   const currentLocale = params.locale;
-  const slug = params.slug;
+  const baseUrl = new URL(process.env.NEXT_PUBLIC_URI as string);
 
-  // Fetch SEO data
-  const seo = await fetchSeo(slug);
-
-  // Default metadata for the Products page if fetching fails
-  const defaultMetadata = {
+  return {
+    metadataBase: baseUrl,
     title: currentLocale === "en" ? "Our Products" : "منتجاتنا",
     description:
       currentLocale === "en"
-        ? "Explore our wide range of high-quality products tailored to meet diverse needs."
-        : "استكشف مجموعتنا الواسعة من المنتجات عالية الجودة المصممة لتلبية الاحتياجات المختلفة.",
+        ? "Explore our range of high-quality products and innovative solutions."
+        : "اكتشف تشكيلتنا من المنتجات عالية الجودة والحلول المبتكرة.",
     keywords:
       currentLocale === "en"
-        ? "products, quality, range"
-        : "منتجات, جودة, مجموعة",
-  };
-
-  // Construct metadata based on availability of SEO data
-  const metadata: Record<string, unknown> = {
-    title: seo
-      ? currentLocale === "en"
-        ? seo.title_en
-        : seo.title_ar
-      : defaultMetadata.title,
-    description: seo
-      ? currentLocale === "en"
-        ? seo.meta_description_en
-        : seo.meta_description_ar
-      : defaultMetadata.description,
-    keywords: seo
-      ? currentLocale === "en"
-        ? seo.keywords_en
-        : seo.keywords_ar
-      : defaultMetadata.keywords,
-  };
-
-  // Add Open Graph metadata only if SEO data includes an image
-  if (seo?.og_image) {
-    metadata.openGraph = {
-      title: currentLocale === "en" ? seo.og_title_en : seo.og_title_ar,
+        ? ["products", "solutions", "offerings", "product catalog"]
+        : ["منتجات", "حلول", "عروض", "كتالوج المنتجات"],
+    openGraph: {
+      title: currentLocale === "en" ? "Product Catalog" : "كتالوج المنتجات",
       description:
-        currentLocale === "en" ? seo.og_description_en : seo.og_description_ar,
-      url: `${process.env.NEXT_PUBLIC_URI}/${currentLocale}/products/${slug}`,
+        currentLocale === "en"
+          ? "Discover our comprehensive product portfolio and technical specifications."
+          : "اكتشف مجموعة منتجاتنا الشاملة والمواصفات الفنية.",
+      url: new URL(
+        `/${currentLocale}/products/${params.slug}`,
+        baseUrl
+      ).toString(),
       images: [
         {
-          url: seo.og_image,
+          url: "/products-og-image.jpg",
           width: 1200,
           height: 630,
-          alt: currentLocale === "en" ? seo.title_en : seo.title_ar,
+          alt:
+            currentLocale === "en"
+              ? "Product Collection Overview"
+              : "نظرة عامة على مجموعة المنتجات",
         },
       ],
-    };
-  }
+      locale: currentLocale,
+      type: "website",
+      ...(currentLocale === "ar" && {
+        "ar:locale": "ar_AR",
+        "ar:title": "المنتجات والخدمات",
+        "ar:description": "تصفح تشكيلة المنتجات المميزة والخدمات المتخصصة",
+      }),
+    },
+  };
+}
 
-  return metadata;
+export async function generateStaticParams() {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/edit-website/products`,
+      {
+        cache: "no-cache",
+      }
+    );
+
+    if (!response.status) {
+      throw new Error(`Failed to fetch products: ${response.status}`);
+    }
+
+    const { data } = await response.json();
+
+    // Return both `slug` and `id` for dynamic routes
+    return data.flatMap((product: IProduct) => [
+      { slug: product.slug, locale: "en" }, // English version
+      { slug: product.slug_ar, locale: "ar" }, // Arabic version
+    ]);
+  } catch (error) {
+    console.error("Error in generateStaticParams:", error);
+    return [];
+  }
 }
 
 interface SingleProductPageProps {
@@ -99,13 +89,14 @@ interface SingleProductPageProps {
   };
 }
 
-const SingleProductPage: React.FC<SingleProductPageProps> = ({
-  params,
-  searchParams,
-}) => {
+const SingleProductPage: React.FC<SingleProductPageProps> = ({ params }) => {
   const { locale, slug } = params;
-  const { id } = searchParams;
-  return <SingleProduct locale={locale} slug={slug} id={String(id)} />;
+  return (
+    <>
+      <SEOUpdater page={slug} locale={locale} />
+      <SingleProduct locale={locale} slug={slug} />
+    </>
+  );
 };
 
 export default SingleProductPage;

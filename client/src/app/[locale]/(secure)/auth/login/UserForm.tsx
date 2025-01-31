@@ -12,8 +12,10 @@ import { toast } from "react-toastify";
 import { Button, Form, FormGroup, Input, Label, Alert } from "reactstrap";
 import { useAppDispatch } from "@/Redux/Hooks";
 import { login } from "@/Redux/Reducers/UserSlice";
+import { useLocale } from "next-intl";
 
 const UserForm = () => {
+  const locale = useLocale();
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,8 +34,6 @@ const UserForm = () => {
         setAlertMessage(result.message || "Invalid credentials");
         setVisible(true);
       } else {
-        console.log(result);
-        
         Cookies.set("mofi_token", JSON.stringify(true));
         Cookies.set("auth_token", result.token);
         window.localStorage.setItem(
@@ -45,7 +45,7 @@ const UserForm = () => {
             email: result.data.email,
           })
         );
-        router.push("/dashboard/");
+        router.push(`/${locale}/dashboard`);
         toast.success("Login successful");
         setAlertMessage("");
       }

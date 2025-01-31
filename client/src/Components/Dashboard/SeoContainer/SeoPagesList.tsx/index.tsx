@@ -10,10 +10,12 @@ import {
   SeoData,
 } from "@/Redux/Reducers/SeoSlice";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 const SeoPagesList = () => {
   const dispatch = useAppDispatch();
   const { allSeoData, loading } = useAppSelector((state) => state.seo);
+  const locale = useLocale();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,7 +83,7 @@ const SeoPagesList = () => {
           <li className="edit">
             <Link
               prefetch={false}
-              href={`${process.env.NEXT_PUBLIC_URI}/dashboard/seo/${row.page}`}
+              href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/seo/edit?page=${row.page}`}
             >
               <i className="icon-pencil-alt" />
             </Link>
@@ -108,7 +110,7 @@ const SeoPagesList = () => {
         ) : (
           <>
             <Col sm="12" className="mb-3 d-flex justify-content-end">
-              <Link href={`${process.env.NEXT_PUBLIC_URI}/dashboard/seo/add`}>
+              <Link href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/seo/add`}>
                 <Button size="md" color="primary">
                   Create SEO
                 </Button>

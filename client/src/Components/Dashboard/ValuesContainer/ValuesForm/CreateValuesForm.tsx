@@ -9,10 +9,12 @@ import { useAppDispatch } from "@/Redux/Hooks";
 import { addValue } from "@/Redux/Reducers/ValuesSlice";
 import { LinkAndPublishedSection } from "./LinkAndPublishedSection";
 import { DescriptionSection } from "./DescriptionSection";
+import { useLocale } from "next-intl";
 
 const CreateValuesForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const locale = useLocale();
 
   const initialFormValues = {
     title: "",
@@ -52,7 +54,7 @@ const CreateValuesForm = () => {
     try {
       await dispatch(addValue(formData)).unwrap();
       toast.success("Value Created successfully!");
-      router.push("/dashboard/edit-home/values/");
+      router.push(`/${locale}/dashboard/edit-home/values/`);
     } catch (error) {
       if(error instanceof Error){
         toast.error(error.message || "Error Creating Carousel.");

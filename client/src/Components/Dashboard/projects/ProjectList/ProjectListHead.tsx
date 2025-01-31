@@ -1,6 +1,7 @@
 import { All, CreateNewProject, Href } from "@/Constant";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { setActiveTab } from "@/Redux/Reducers/ProjectSlice";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { CheckCircle, Info, PlusSquare, Target } from "react-feather";
 import {
@@ -16,6 +17,7 @@ import {
 export const ProjectListHead = () => {
   const { activeTab } = useAppSelector((state) => state.project);
   const dispatch = useAppDispatch();
+  const locale = useLocale();
 
   return (
     <Card>
@@ -68,7 +70,7 @@ export const ProjectListHead = () => {
           <FormGroup className="m-0 me-0"></FormGroup>
           <Link
             className="btn btn-primary"
-            href={`${process.env.NEXT_PUBLIC_URI}/dashboard/projects/add`}
+            href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/projects/add`}
             prefetch={true}
           >
             <PlusSquare />

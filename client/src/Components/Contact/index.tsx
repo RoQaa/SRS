@@ -1,3 +1,4 @@
+"use client";
 import SectionTitle from "../titles/SectionTitle";
 import MapInfo from "./MapInfo";
 import "@fortawesome/fontawesome-free/css/all.min.css";

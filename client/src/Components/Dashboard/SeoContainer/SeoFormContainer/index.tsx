@@ -1,19 +1,18 @@
 "use client";
 import { Card, CardBody, Col, Container, Row } from "reactstrap";
 import CreateOrUpdateSeoForm from "./CreateOrUpdateSeoForm";
+import { useSearchParams } from "next/navigation";
 
-interface SeoFormContainerProps {
-  page: string;
-}
-
-const SeoFormContainer: React.FC<SeoFormContainerProps> = ({ page = "" }) => {
+const SeoFormContainer: React.FC= () => {
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page");
   return (
     <Container fluid>
       <Row>
         <Col sm="12">
           <Card>
             <CardBody>
-              <CreateOrUpdateSeoForm page={page} />
+              <CreateOrUpdateSeoForm page={page ? page : "" } />
             </CardBody>
           </Card>
         </Col>

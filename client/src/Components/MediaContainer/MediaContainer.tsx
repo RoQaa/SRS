@@ -13,7 +13,7 @@ const MediaContainer = () => {
   const dispatch = useAppDispatch();
   const t = useTranslations();
   const locale = useLocale();
-
+  
   useEffect(() => {
     if (mediaItems?.length < 1) {
       dispatch(fetchMediaItems());

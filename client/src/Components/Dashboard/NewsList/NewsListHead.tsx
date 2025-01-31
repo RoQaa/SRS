@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@/Redux/Hooks";
 import { setActiveTab } from "@/Redux/Reducers/NewsSlice";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { CheckCircle, Info, PlusSquare, Target } from "react-feather";
 import { Card, Col, Nav, NavItem, NavLink, Row } from "reactstrap";
@@ -10,7 +11,7 @@ interface NewsListHeadProps {
 
 export const NewsListHead: React.FC<NewsListHeadProps> = ({ activeTab }) => {
   const dispatch = useAppDispatch();
-
+  const locale = useLocale();
   return (
     <Card>
       <Row>
@@ -49,7 +50,7 @@ export const NewsListHead: React.FC<NewsListHeadProps> = ({ activeTab }) => {
           </Nav>
         </Col>
         <Col md="6" className="text-end">
-          <Link className="btn btn-primary" href={`/dashboard/news/add`}>
+          <Link className="btn btn-primary" href={`/${locale}/dashboard/news/add`}>
             <PlusSquare />
             Create News
           </Link>

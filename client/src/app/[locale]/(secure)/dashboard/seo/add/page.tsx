@@ -2,7 +2,7 @@ import SeoFormContainer from "@/Components/Dashboard/SeoContainer/SeoFormContain
 
 const page = () => {
   return (
-    <SeoFormContainer page="" />
+    <SeoFormContainer />
   )
 }
 

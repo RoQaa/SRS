@@ -10,10 +10,12 @@ import * as Yup from "yup";
 import { useAppDispatch } from "@/Redux/Hooks";
 import { IMainCarousel } from "@/interfaces/MainCarousel.interface";
 import { addMainCarousel } from "@/Redux/Reducers/MainCarouselsSlice";
+import { useLocale } from "next-intl";
 
 const CreateNewCarouselForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const locale = useLocale();
 
   const initialFormValues = {
     title: "",
@@ -44,7 +46,7 @@ const CreateNewCarouselForm = () => {
     try {
       await dispatch(addMainCarousel(formData)).unwrap();
       toast.success("Carousel Created successfully!");
-      router.push("/dashboard/edit-home/main-carousels/");
+      router.push(`/${locale}/dashboard/edit-home/main-carousels/`);
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message || "Error Creating Carousel.");

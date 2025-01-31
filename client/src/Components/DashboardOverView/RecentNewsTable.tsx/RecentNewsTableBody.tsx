@@ -28,7 +28,7 @@ const RecentNewsTableBody = () => {
               </td>
               <td className="px2">
                 <Link
-                  href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/news/${data.slug}`}
+                  href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/news/edit?id=${data._id}`}
                 >
                   {data.title}
                 </Link>

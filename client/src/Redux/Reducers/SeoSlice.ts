@@ -59,7 +59,7 @@ export const fetchSeoByPage = createAsyncThunk<SeoData, string>(
   "seo/fetchSeoByPage",
   async (pageName: string, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${SEO_API}/${pageName}`, {
+      const response = await axios.get(`${SEO_API}/findByPage/${pageName}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("auth_token")}`,
         },
@@ -104,7 +104,7 @@ export const updateSeo = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axios.patch(`${SEO_API}/${page}`, formData, {
+      const response = await axios.patch(`${SEO_API}/findByPage/${page}`, formData, {
         headers: {
           Authorization: `Bearer ${Cookies.get("auth_token")}`,
         },
@@ -126,7 +126,7 @@ export const deleteSeoByPage = createAsyncThunk<void, string>(
   "seo/deleteSeoByPage",
   async (pageName: string, { dispatch, rejectWithValue }) => {
     try {
-      const response = await axios.delete(`${SEO_API}/${pageName}`, {
+      const response = await axios.delete(`${SEO_API}/findByPage/${pageName}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("auth_token")}`,
         },

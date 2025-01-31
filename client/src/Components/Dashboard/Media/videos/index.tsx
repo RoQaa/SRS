@@ -4,12 +4,14 @@ import { PlusSquare } from "react-feather";
 import { useRouter } from "next/navigation";
 import CommonCarouselHeader from "../../CommonCarouselHeader";
 import { MediaGalleryVideo } from "./MediaGalleryVideo";
+import { useLocale } from "next-intl";
 
 const MediaVideosContainer = () => {
   const router = useRouter();
+  const locale = useLocale();
 
   const handleButtonClick = () => {
-    router.push("/dashboard/media/videos/add");
+    router.push(`/${locale}/dashboard/media/videos/add`);
   };
 
   return (

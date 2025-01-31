@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@/Redux/Hooks";
 import { setActiveTab } from "@/Redux/Reducers/ScopeSlice";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { CheckCircle, Info, PlusSquare, Target } from "react-feather";
 import { Card, Col, Nav, NavItem, NavLink, Row } from "reactstrap";
@@ -10,6 +11,7 @@ interface ScopeListHeadProps {
 
 export const ScopeListHead: React.FC<ScopeListHeadProps> = ({ activeTab }) => {
   const dispatch = useAppDispatch();
+  const locale = useLocale();
 
   return (
     <Card>
@@ -49,7 +51,7 @@ export const ScopeListHead: React.FC<ScopeListHeadProps> = ({ activeTab }) => {
           </Nav>
         </Col>
         <Col md="6" className="text-end">
-          <Link className="btn btn-primary" href={`/dashboard/edit-scope/add`}>
+          <Link className="btn btn-primary" href={`/${locale}/dashboard/edit-scope/add`}>
             <PlusSquare />
             Create Scope
           </Link>

@@ -3,26 +3,27 @@ import ProductsSlide from "@/Components/slides/ProductsSlide";
 import PageTitle from "@/Components/titles/PageTitle";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { fetchNewsById } from "@/Redux/Reducers/NewsSlice";
+import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 interface SingleNewsContainerProps {
   locale: string;
   slug: string;
-  id: string;
 }
 
 const SingleNewsContainer: React.FC<SingleNewsContainerProps> = ({
   locale,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   slug,
-  id,
 }) => {
   const { currentNews } = useAppSelector((state) => state.news);
   const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   useEffect(() => {
-    if (!currentNews) dispatch(fetchNewsById(id));
-  }, [currentNews, dispatch, id]);
+    dispatch(fetchNewsById(id as string));
+  }, [dispatch, id]);
 
   return (
     <>
@@ -30,7 +31,11 @@ const SingleNewsContainer: React.FC<SingleNewsContainerProps> = ({
         imgSrc="/imgs/page-head/banner-news-1.jpg"
         title={locale === "en" ? "Latest News" : "اخر الأخبار"}
         locale={locale}
-        slug={locale === "en" ? currentNews?.title : currentNews?.title_ar || "Unknown Title"}
+        slug={
+          locale === "en"
+            ? currentNews?.title
+            : currentNews?.title_ar || "Unknown Title"
+        }
         mainPage={false}
       />
 

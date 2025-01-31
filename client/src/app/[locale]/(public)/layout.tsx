@@ -6,22 +6,28 @@ import Navbar from "@/Components/Header/Navbar/index";
 import { BootstrapInstallment } from "@/Components/BootstrapInstallment";
 import Footer from "@/Components/Footer/Footer";
 import CopyRights from "@/Components/CopyRights/CopyRights";
-import { useLocale } from "next-intl";
+import { routing } from "@/i18n/routing";
 
 const cairo_next = Cairo({
   subsets: ["latin", "arabic"],
   weight: ["200", "300", "400", "500", "600", "700", "800", "900", "1000"],
 });
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({locale}));
+}
+
 
 export default function RootLayout({
   children,
-}: Readonly<{
+  params,
+}: {
   children: React.ReactNode;
-}>) {
-  const currentLocale = useLocale();
+  params: { locale: string };
+}) {
+  const locale = params.locale
   return (
-    <html dir={currentLocale === "en" ? "ltr" : "rtl"} lang={currentLocale}>
+    <html dir={locale === "en" ? "ltr" : "rtl"} lang={locale}>
       <body className={`${cairo_next.className}`}>
         <BootstrapInstallment />
         <div className="container">

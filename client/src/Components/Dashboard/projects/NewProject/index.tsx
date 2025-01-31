@@ -1,21 +1,18 @@
 "use client";
 import { Card, CardBody, Col, Container, Row } from "reactstrap";
 import CreateNewProjectForm from "./CreateNewProjectForm";
+import { useSearchParams } from "next/navigation";
 
-interface NewProjectContainerProps {
-  slug: string;
-}
-
-const NewProjectContainer: React.FC<NewProjectContainerProps> = ({
-  slug = "",
-}) => {
+const NewProjectContainer: React.FC = () => {
+  const searchParams = useSearchParams();
+  const slug = searchParams.get("id");
   return (
     <Container fluid>
       <Row>
         <Col sm="12">
           <Card>
             <CardBody>
-              <CreateNewProjectForm slug={slug} />
+              <CreateNewProjectForm slug={slug as string} />
             </CardBody>
           </Card>
         </Col>

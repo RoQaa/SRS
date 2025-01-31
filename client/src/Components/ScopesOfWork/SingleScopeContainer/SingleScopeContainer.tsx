@@ -7,26 +7,27 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { fetchScopeById } from "@/Redux/Reducers/ScopeSlice";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 interface SingleScopeContainerProps {
   locale: string;
   slug: string;
-  id?: string;
 }
 
 const SingleScopeContainer: React.FC<SingleScopeContainerProps> = ({
   slug,
-  locale,
-  id = "",
+  locale
 }) => {
   // const { mainScope, otherScopes } = SingleScopeData;
   const { currentScope } = useAppSelector((state) => state.scopes);
   const dispatch = useAppDispatch();
   const t = useTranslations("scopes");
+  const searchParams = useSearchParams()
+  const id = searchParams.get("id");
 
   useEffect(() => {
-    dispatch(fetchScopeById(id));
+    dispatch(fetchScopeById(id as string));
   }, [dispatch, id]);
 
   return (

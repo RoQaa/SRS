@@ -14,18 +14,19 @@ import { fetchProjectById, fetchProjects } from "@/Redux/Reducers/ProjectSlice";
 import { fetchProducts } from "@/Redux/Reducers/ProductsSlice";
 import { getCategoryNameById } from "@/utils/getCategoryNameById";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 
 interface SingleProjectProps {
   slug: string;
   locale: string;
-  id?: string;
 }
 
 const SingleProject: React.FC<SingleProjectProps> = ({
   slug,
   locale,
-  id = "",
 }) => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const t = useTranslations("products");
   const { projectsData, currentProject } = useAppSelector(
     (state) => state.project
@@ -39,7 +40,7 @@ const SingleProject: React.FC<SingleProjectProps> = ({
   useEffect(() => {
     const loadData = async () => {
       await dispatch(fetchProjects());
-      await dispatch(fetchProjectById(id));
+      await dispatch(fetchProjectById(id as string));
       await dispatch(fetchProducts());
       setLoading(false);
     };

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { useLocale } from "next-intl";
 
 const Menulist: React.FC<MenuListType> = ({
   menu,
@@ -17,6 +18,7 @@ const Menulist: React.FC<MenuListType> = ({
   const { pinedMenu } = useAppSelector((state) => state.layout);
   const pathname = usePathname();
   const dispatch = useAppDispatch();
+  const locale = useLocale();
 
   const { t } = useTranslation("common");
   const { sidebarIconType } = useAppSelector((state) => state.themeCustomizer);
@@ -85,7 +87,7 @@ const Menulist: React.FC<MenuListType> = ({
                 ? "active"
                 : ""
             }`}
-            href={item?.path ? `${item.path}` : ""}
+            href={item?.path ? `/${locale}${item.path}` : ""}
             onClick={() => {
               const temp = activeMenu;
               temp[level] = item.title !== temp[level] && item.title;

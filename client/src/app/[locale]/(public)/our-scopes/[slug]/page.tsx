@@ -1,89 +1,79 @@
 import SingleScopeContainer from "@/Components/ScopesOfWork/SingleScopeContainer/SingleScopeContainer";
-
-const fetchSeo = async (slug: string) => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/seo/findByPage/${slug}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      console.error("Failed to fetch SEO data:", res.status, res.statusText);
-      return null;
-    }
-
-    const seoData = await res.json();
-    return seoData.data;
-  } catch (error) {
-    console.error("Error fetching or parsing SEO data:", error);
-    return null;
-  }
-};
+import SEOUpdater from "@/Components/SEOUpdater";
+import { IScope } from "@/interfaces/Scope.interface";
 
 export async function generateMetadata({
   params,
 }: {
-  params: { locale: string; slug: string };
+  params: { locale: string, slug: string };
 }) {
   const currentLocale = params.locale;
-  const slug = params.slug;
+  const baseUrl = new URL(process.env.NEXT_PUBLIC_URI as string);
 
-  // Fetch SEO data
-  const seo = await fetchSeo(slug);
-
-  // Default metadata if fetching fails
-  const defaultMetadata = {
-    title: currentLocale === "en" ? "Our Scopes" : "نطاقاتنا",
-    description:
-      currentLocale === "en"
-        ? "Explore the various scopes and services offered by My Website."
-        : "استكشف النطاقات والخدمات التي نقدمها في غزالة.",
-    keywords:
-      currentLocale === "en"
-        ? "scopes, services, my website"
-        : "النطاقات, الخدمات, غزالة",
-  };
-
-  // Construct metadata based on availability of SEO data
-  const metadata: Record<string, unknown> = {
-    title: seo
-      ? currentLocale === "en"
-        ? seo.title_en
-        : seo.title_ar
-      : defaultMetadata.title,
-    description: seo
-      ? currentLocale === "en"
-        ? seo.meta_description_en
-        : seo.meta_description_ar
-      : defaultMetadata.description,
-    keywords: seo
-      ? currentLocale === "en"
-        ? seo.keywords_en
-        : seo.keywords_ar
-      : defaultMetadata.keywords,
-  };
-
-  // Add Open Graph metadata only if SEO data includes an image
-  if (seo?.og_image) {
-    metadata.openGraph = {
-      title: currentLocale === "en" ? seo.og_title_en : seo.og_title_ar,
-      description:
-        currentLocale === "en" ? seo.og_description_en : seo.og_description_ar,
-      url: `${process.env.NEXT_PUBLIC_URI}/${currentLocale}/our-scopes/${slug}`,
+  return {
+    metadataBase: baseUrl,
+    title: currentLocale === "en" 
+      ? "Our Business Scopes" 
+      : "مجالات عملنا",
+    description: currentLocale === "en"
+      ? "Discover the diverse range of services and business areas we operate in."
+      : "اكتشف مجموعة الخدمات المتنوعة والمجالات التجارية التي نعمل بها.",
+    keywords: currentLocale === "en"
+      ? ["business scopes", "services", "operations", "capabilities"]
+      : ["مجالات العمل", "الخدمات", "العمليات", "القدرات"],
+    openGraph: {
+      title: currentLocale === "en" 
+        ? "Our Operational Scopes" 
+        : "نطاقات عملنا",
+      description: currentLocale === "en"
+        ? "Explore our comprehensive range of professional services and business expertise."
+        : "استكشف مجموعة خدماتنا المهنية وخبراتنا التجارية الشاملة.",
+      url: new URL(`/${currentLocale}/our-scopes/${params.slug}`, baseUrl).toString(),
       images: [
         {
-          url: seo.og_image,
+          url: '/our-scopes-og-image.jpg',
           width: 1200,
           height: 630,
-          alt: currentLocale === "en" ? seo.title_en : seo.title_ar,
+          alt: currentLocale === "en" 
+            ? "Business Scopes Overview" 
+            : "نظرة عامة على مجالات العمل",
         },
       ],
-    };
-  }
+      locale: currentLocale,
+      type: 'website',
+      ...(currentLocale === 'ar' && {
+        'ar:locale': 'ar_AR',
+        'ar:title': "مجالات عملنا التجارية",
+        'ar:description': "تعرف على مختلف نطاقات العمل والخدمات التي نقدمها"
+      })
+    }
+  };
+}
 
-  return metadata;
+export async function generateStaticParams() {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/edit-website/scopes`,
+      {
+        cache: "no-cache",
+      }
+    );
+
+    if (!response.status) {
+      throw new Error(`Failed to fetch scopes: ${response.status}`);
+    }
+
+    const { data } = await response.json();
+    
+    // Return both `slug` and `id` for dynamic routes
+    return data.flatMap((scope: IScope) => [
+      { slug: scope.slug, locale: "en" }, // English version
+      { slug: scope.slug_ar, locale: "ar" }, // Arabic version
+    ]);
+  } catch (error) {
+    console.error("Error in generateStaticParams:", error);
+    return [];
+  }
 }
 
 interface SingleScopePageProps {
@@ -96,15 +86,15 @@ interface SingleScopePageProps {
   };
 }
 
-const SingleScopePage: React.FC<SingleScopePageProps> = ({
-  params, searchParams,
-}) => {
-
+const SingleScopePage: React.FC<SingleScopePageProps> = ({ params }) => {
   const { locale, slug } = params;
-  const { id } = searchParams;
-  
-  
-  return <SingleScopeContainer locale={locale} slug={slug} id={String(id)} />;
+
+  return (
+    <>
+      <SEOUpdater page={slug} locale={locale} />
+      <SingleScopeContainer locale={locale} slug={slug} />
+    </>
+  );
 };
 
 export default SingleScopePage;

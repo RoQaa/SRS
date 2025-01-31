@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { useLocale } from "next-intl";
 
 export default function RootLayout({
   children,
@@ -22,6 +23,7 @@ export default function RootLayout({
   const { layout } = useAppSelector((state) => state.themeCustomizer);
   const dispatch = useAppDispatch();
   const [token, setToken] = useState<string | null>(null);
+  const locale = useLocale();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const compactSidebar = () => {
@@ -47,26 +49,26 @@ export default function RootLayout({
     const authToken = Cookies.get("auth_token");
 
     if (!authToken) {
-      router.push("/auth/login"); // Redirect if no token
+      router.push(`/${locale}/auth/login`); // Redirect if no token
       return;
     }
 
     try {
       const decodedToken: { exp: number } = jwtDecode(authToken);
-      
+
       if (decodedToken.exp < Date.now() / 1000) {
         Cookies.remove("auth_token");
         window.localStorage.removeItem("user");
-        router.push("/auth/login");
+        router.push(`/${locale}/auth/login`);
         return;
       }
 
       setToken(authToken);
     } catch {
       Cookies.remove("auth_token");
-      router.push("/auth/login");
+      router.push(`/${locale}/auth/login`);
     }
-  }, [router]);
+  }, [locale, router]);
 
   useEffect(() => {
     compactSidebar();

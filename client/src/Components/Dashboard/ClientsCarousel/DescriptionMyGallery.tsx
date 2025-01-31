@@ -8,10 +8,12 @@ import { RootState } from "@/Redux/Store";
 import { useRouter } from "next/navigation";
 import { CardBody, Spinner } from "reactstrap";
 import { deleteClientCarousel, fetchClientsCarousels } from "@/Redux/Reducers/ClientsCarouselsSlice";
+import { useLocale } from "next-intl";
 
 export const DescriptionMyGallery = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const locale = useLocale();
   const { clientsCarousels, loading } = useAppSelector(
     (state: RootState) => state.clientsCarousel
   );
@@ -109,7 +111,7 @@ export const DescriptionMyGallery = () => {
                             <a
                               onClick={() =>
                                 router.push(
-                                  `/dashboard/edit-home/clients-carousel/${item?._id}`
+                                  `/${locale}/dashboard/edit-home/clients-carousel/edit?id=${item?._id}`
                                 )
                               }
                               href={"#"}

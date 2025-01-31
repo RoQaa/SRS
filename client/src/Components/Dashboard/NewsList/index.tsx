@@ -8,9 +8,11 @@ import { stripHtmlTags } from "@/utils/stripHtmlTags";
 import { useAppSelector, useAppDispatch } from "@/Redux/Hooks";
 import { fetchNews, deleteNews } from "@/Redux/Reducers/NewsSlice";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 const NewsListContainer = () => {
   const dispatch = useAppDispatch();
+  const locale = useLocale();
   const { newsData, activeTab, loading, error } = useAppSelector(
     (state) => state.news
   );
@@ -100,7 +102,7 @@ const NewsListContainer = () => {
         <ul className="action simple-list d-flex flex-row">
           <li className="edit">
             <Link
-              href={`${process.env.NEXT_PUBLIC_URI}/dashboard/news/${row.slug}?id=${row._id}`}
+              href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/news/edit?id=${row._id}`}
             >
               <i className="icon-pencil-alt" />
             </Link>

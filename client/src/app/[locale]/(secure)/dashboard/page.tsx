@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { setUser } from "@/Redux/Reducers/UserSlice";
+import { useLocale } from "next-intl";
 
 const DashboardPage: FunctionComponent = () => {
   const [DashboardOverView, setDashboardOverView] =
@@ -12,6 +13,7 @@ const DashboardPage: FunctionComponent = () => {
   const router = useRouter();
   const authToken = Cookies.get("auth_token");
   const dispatch = useAppDispatch();
+  const locale = useLocale();
 
   useEffect(() => {
     let user;
@@ -32,7 +34,7 @@ const DashboardPage: FunctionComponent = () => {
 
       loadComponent();
     } else {
-      router.push("/auth/login");
+      router.push(`/${locale}/auth/login`);
       return;
     }
   }, [authToken, dispatch, router]);

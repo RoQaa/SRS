@@ -1,29 +1,5 @@
 import AccredintionPageContainer from "@/Components/AccredintionPageContainer/AccredintionPageContainer";
-
-const fetchSeo = async () => {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/seo/findByPage/accredintions`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      }
-    );
-
-    if (!res.ok) {
-      console.error("Failed to fetch SEO data:", res.status, res.statusText);
-      return null;
-    }
-
-    const seoData = await res.json();
-    return seoData.data;
-  } catch (error) {
-    console.error("Error fetching or parsing SEO data:", error);
-    return null;
-  }
-};
+import SEOUpdater from "@/Components/SEOUpdater";
 
 export async function generateMetadata({
   params,
@@ -31,68 +7,65 @@ export async function generateMetadata({
   params: { locale: string };
 }) {
   const currentLocale = params.locale;
+  const baseUrl = new URL(
+    process.env.NEXT_PUBLIC_URI as string
+  );
 
-  // Fetch SEO data
-  const seo = await fetchSeo();
-
-  // Default metadata if fetching fails
-  const defaultMetadata = {
-    title:
-      currentLocale === "en"
-        ? "Accreditations"
-        : "الإعتمادات",
+  return {
+    metadataBase: baseUrl,
+    title: currentLocale === "en" ? "Our Accreditations" : "اعتماداتنا",
     description:
       currentLocale === "en"
-        ? "Explore our accreditations and achievements at Gazala Website."
-        : "استكشف اعتماداتنا وإنجازاتنا على موقعنا.",
+        ? "Discover our official accreditations and quality certifications."
+        : "اكتشف اعتماداتنا وشهادات الجودة الرسمية الخاصة بنا.",
     keywords:
       currentLocale === "en"
-        ? "accreditations, achievements, certificates"
-        : " الشهادات,الإعتمادات, الإنجازات, غزالة",
-  };
-
-  // Construct metadata based on availability of SEO data
-  const metadata: Record<string, unknown> = {
-    title: seo
-      ? currentLocale === "en"
-        ? seo.title_en
-        : seo.title_ar
-      : defaultMetadata.title,
-    description: seo
-      ? currentLocale === "en"
-        ? seo.meta_description_en
-        : seo.meta_description_ar
-      : defaultMetadata.description,
-    keywords: seo
-      ? currentLocale === "en"
-        ? seo.keywords_en
-        : seo.keywords_ar
-      : defaultMetadata.keywords,
-  };
-
-  // Add Open Graph metadata only if SEO data includes an image
-  if (seo?.og_image) {
-    metadata.openGraph = {
-      title: currentLocale === "en" ? seo.og_title_en : seo.og_title_ar,
+        ? [
+            "accreditations",
+            "certifications",
+            "quality standards",
+            "compliance",
+          ]
+        : ["اعتمادات", "شهادات", "معايير الجودة", "التوافق"],
+    openGraph: {
+      title:
+        currentLocale === "en"
+          ? "Accreditations & Certifications"
+          : "الاعتمادات والشهادات",
       description:
-        currentLocale === "en" ? seo.og_description_en : seo.og_description_ar,
-      url: `${process.env.NEXT_PUBLIC_URI}/${currentLocale}/accredintions`,
+        currentLocale === "en"
+          ? "Explore our recognized accreditations and quality assurance certifications."
+          : "استكشف اعتماداتنا المعترف بها وشهادات ضمان الجودة.",
+      url: new URL(`/${currentLocale}/accreditations`, baseUrl).toString(),
       images: [
         {
-          url: seo.og_image,
+          url: "/accreditations-og-image.jpg",
           width: 1200,
           height: 630,
-          alt: currentLocale === "en" ? seo.title_en : seo.title_ar,
+          alt:
+            currentLocale === "en"
+              ? "Accreditations Overview"
+              : "نظرة عامة على الاعتمادات",
         },
       ],
-    };
-  }
-
-  return metadata;
+      locale: currentLocale,
+      type: "website",
+      ...(currentLocale === "ar" && {
+        "ar:locale": "ar_AR",
+        "ar:title": "اعتماداتنا وشهاداتنا",
+        "ar:description": "اعتمادات معتمدة وشهادات جودة دولية",
+      }),
+    },
+  };
 }
 
-const AccreditationsPage: React.FC = () => {
-  return <AccredintionPageContainer />;
+const AccreditationsPage = ({ params }: { params: { locale: string } }) => {
+  return (
+    <>
+      <SEOUpdater page="accreditations" locale={params.locale} />
+      <AccredintionPageContainer />
+    </>
+  );
 };
 
 export default AccreditationsPage;

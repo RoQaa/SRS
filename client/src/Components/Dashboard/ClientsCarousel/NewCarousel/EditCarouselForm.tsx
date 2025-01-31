@@ -16,10 +16,12 @@ import {
   updateClientCarousel,
 } from "@/Redux/Reducers/ClientsCarouselsSlice";
 import { IClientCarousel } from "@/interfaces/ClientsCarousel.interface";
+import { useLocale } from "next-intl";
 
 const EditCarouselForm = ({ id }: { id: string }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const locale = useLocale();
   const currentCarousel = useAppSelector(selectCurrentClientCarousel);
   const carouselLoading = useAppSelector(selectClientsCarouselLoading);
 
@@ -59,11 +61,11 @@ const EditCarouselForm = ({ id }: { id: string }) => {
         updateClientCarousel({ id: id, updatedItem: formData })
       ).unwrap();
       toast.success("Carousel Updated successfully!");
-      router.push("/dashboard/edit-home/clients-carousel/");
+      router.push(`/${locale}/dashboard/edit-home/clients-carousel/`);
     } catch (error) {
-      if(error instanceof Error) {
+      if (error instanceof Error) {
         toast.error(error.message || "Error Updating Carousel.");
-      }else {
+      } else {
         toast.error("Error Updating Carousel.");
       }
     }

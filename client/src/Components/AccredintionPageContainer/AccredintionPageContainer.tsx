@@ -1,3 +1,4 @@
+"use client";
 import React, { useMemo } from "react";
 import PageTitle from "@/Components/titles/PageTitle";
 import { useLocale } from "next-intl";

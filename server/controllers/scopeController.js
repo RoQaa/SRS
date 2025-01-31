@@ -54,7 +54,7 @@ const multerFilter = (req, file, cb) => {
     const IconImgFilename = `iconImg-${id}-${timestamp}.${bgExtIconImg}`;
   
     await sharp(req.files.iconImg[0].buffer)
-      .resize(2000, 1333) // Resize as necessary
+      .resize(200, 200) // Resize as necessary
       .toFile(`public/scopes/iconImgs/${IconImgFilename}`);
   
     // Save mainImg image URL

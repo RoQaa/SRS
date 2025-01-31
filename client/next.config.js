@@ -4,21 +4,22 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
+  output: "export",
+  images:{
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "gazala.net",
       },
       {
-        protocol: "http",
-        hostname: "127.0.0.1",
-        port:"5000"
+        protocol: "https",
+        hostname: "stagingsrv.gazala.net",
       },
       {
         protocol: "http",
-        hostname: "localhost",
-        port: "3000",
+        hostname: "127.0.0.1",
+        port:"5000",
       },
     ],
   },

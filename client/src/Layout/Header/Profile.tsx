@@ -4,11 +4,12 @@ import Link from "next/link";
 import { LogOut } from "react-feather";
 import { stringToTitleCase } from "@/utils/stringToTitleCase";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 export const Profile = () => {
   const storedUser = window.localStorage.getItem("user");
   const authUser = storedUser ? JSON.parse(storedUser) : "";
-
+  const locale = useLocale();
   const router = useRouter();
   const logOut = async () => {
     const authToken = Cookies.get("auth_token");
@@ -28,7 +29,7 @@ export const Profile = () => {
       Cookies.remove("mofi_token");
       Cookies.remove("auth_token");
       window.localStorage.removeItem("user");
-      router.push("/auth/login");
+      router.push(`/${locale}/auth/login`);
     } catch (error) {
       console.error("Logout failed:", error);
     }

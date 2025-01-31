@@ -4,12 +4,14 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Form, FormGroup, Input, Label, Alert } from "reactstrap";
 import { useState } from "react";
-import Cookies from "js-cookie";
 import { AxiosError } from "axios";
+import { useLocale } from "next-intl";
+import Cookies from "js-cookie";
 
 const UserRegisterForm = () => {
   const router = useRouter();
   const [alertMessage, setAlertMessage] = useState<string>("");
+  const locale = useLocale();
 
   const validationSchema = Yup.object({
     fName: Yup.string()
@@ -51,11 +53,11 @@ const UserRegisterForm = () => {
         const result = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/users`,
           {
-            method: "POST",
             headers: {
               Authorization: `Bearer ${Cookies.get("auth_token")}`,
               "Content-Type": "application/json",
             },
+            method: "POST",
             body: JSON.stringify(values),
           }
         );
@@ -72,7 +74,7 @@ const UserRegisterForm = () => {
 
         if (result.ok && data) {
           toast.success("User Added successfully");
-          router.push(`/dashboard/users`);
+          router.push(`/${locale}/dashboard/users`);
         }
       } catch (error) {
         if (error instanceof Error || error instanceof AxiosError) {

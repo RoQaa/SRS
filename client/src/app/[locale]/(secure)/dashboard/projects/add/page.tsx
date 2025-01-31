@@ -1,8 +1,9 @@
 "use client";
-import NewProjectContainer from "@/Components/Dashboard/projects/NewProject";
+
+import AddProjectContainer from "@/Components/Dashboard/projects/AddProject";
 
 const AddProjects = () => {
-  return <NewProjectContainer slug={""} />;
+  return <AddProjectContainer />;
 };
 
 export default AddProjects;

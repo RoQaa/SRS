@@ -9,9 +9,11 @@ import { stripHtmlTags } from "@/utils/stripHtmlTags";
 import { useAppSelector, useAppDispatch } from "@/Redux/Hooks";
 import { fetchProducts, deleteProduct } from "@/Redux/Reducers/ProductsSlice";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 const ProductListContainer = () => {
   const dispatch = useAppDispatch();
+  const locale = useLocale();
   const { productsData, activeTab, loading } = useAppSelector(
     (state) => state.products
   );
@@ -106,7 +108,7 @@ const ProductListContainer = () => {
           <li className="edit">
             <Link
               prefetch={true}
-              href={`${process.env.NEXT_PUBLIC_URI}/dashboard/products/${row.slug}?id=${row._id}`}
+              href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/products/edit?id=${row._id}`}
             >
               <i className="icon-pencil-alt" />
             </Link>

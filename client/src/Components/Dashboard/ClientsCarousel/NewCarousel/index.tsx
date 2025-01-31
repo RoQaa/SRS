@@ -3,8 +3,11 @@ import React from "react";
 import { Card, CardBody, Col, Container, Row } from "reactstrap";
 import CreateNewProjectForm from "./CreateNewCarouselForm";
 import EditCarouselForm from "./EditCarouselForm";
+import { useSearchParams } from "next/navigation";
 
-const NewClientsCarouselContainer = ({ id = "" }: { id: string }) => {
+const NewClientsCarouselContainer = () => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   return (
     <Container fluid>
       <Row>

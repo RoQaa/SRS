@@ -3,6 +3,7 @@ import { Previous } from "@/Constant";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { resetForm, setNavId, setTabId } from "@/Redux/Reducers/EditScopeSlice";
 import { updateScope } from "@/Redux/Reducers/ScopeSlice";
+import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button } from "reactstrap";
@@ -17,6 +18,7 @@ const EditScopeButton: React.FC<EditScopeButtonProps> = ({ slug }) => {
   );
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const locale = useLocale();
 
   const submitFormData = async (formData: FormData) => {
     try {
@@ -26,7 +28,7 @@ const EditScopeButton: React.FC<EditScopeButtonProps> = ({ slug }) => {
 
       if (response.status) {
         toast.success("Scope updated successfully!");
-        router.push(`/dashboard/edit-scope/`);
+        router.push(`/${locale}/dashboard/edit-scope/`);
         dispatch(resetForm());
         dispatch(setNavId(1));
       } else {

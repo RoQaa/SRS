@@ -1,6 +1,7 @@
 import { IValue } from "@/interfaces/Value.interface";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { deleteValue } from "@/Redux/Reducers/ValuesSlice";
+import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button, Card, CardBody, CardFooter, Col, Row } from "reactstrap";
 import SweetAlert from "sweetalert2";
@@ -11,6 +12,7 @@ interface ValueCardProps {
 
 const ValueCard = ({ values }: ValueCardProps) => {
   const dispatch = useAppDispatch();
+  const locale = useLocale();
   const router = useRouter();
   const { activeTab } = useAppSelector((state) => state.values);
 
@@ -59,7 +61,7 @@ const ValueCard = ({ values }: ValueCardProps) => {
   };
 
   const handleEditBtn = (id: string) => {
-    router.push(`/dashboard/edit-home/values/${id}`);
+    router.push(`/${locale}/dashboard/edit-home/values/edit?id=${id}`);
   };
 
   return (

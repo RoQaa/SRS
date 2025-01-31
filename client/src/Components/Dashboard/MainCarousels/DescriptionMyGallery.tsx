@@ -10,10 +10,13 @@ import {
 import { RootState } from "@/Redux/Store";
 import { useRouter } from "next/navigation";
 import { CardBody, Spinner } from "reactstrap";
+import { useLocale } from "next-intl";
 
 export const DescriptionMyGallery = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const locale = useLocale();
+  
   const { mainCarousels, loading } = useAppSelector(
     (state: RootState) => state.mainCarousels
   );
@@ -111,7 +114,7 @@ export const DescriptionMyGallery = () => {
                             <a
                               onClick={() =>
                                 router.push(
-                                  `/dashboard/edit-home/main-carousels/${item?._id}`
+                                  `/${locale}/dashboard/edit-home/main-carousels/edit?id=${item?._id}`
                                 )
                               }
                               href={"#"}

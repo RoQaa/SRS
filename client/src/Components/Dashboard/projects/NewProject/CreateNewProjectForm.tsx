@@ -19,6 +19,7 @@ import {
 } from "@/Redux/Reducers/ProjectSlice";
 import { useEffect } from "react";
 import { Spinner } from "reactstrap";
+import { useLocale } from "next-intl";
 
 interface CreateNewProjectFormProps {
   slug: string;
@@ -29,6 +30,7 @@ const CreateNewProjectForm: React.FC<CreateNewProjectFormProps> = ({
 }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const locale = useLocale()
   const { currentProject, dataLoaded } = useAppSelector(
     (state) => state.project
   );
@@ -110,7 +112,7 @@ const CreateNewProjectForm: React.FC<CreateNewProjectFormProps> = ({
         ).unwrap();
         if (res.status) {
           toast.success("Project Updated successfully!");
-          router.push(`/dashboard/projects/`);
+          router.push(`/${locale}/dashboard/projects/`);
         }
       } catch (error: any) {
         toast.error(error?.message || "Failed to Update Project.");
@@ -120,7 +122,7 @@ const CreateNewProjectForm: React.FC<CreateNewProjectFormProps> = ({
       try {
         await dispatch(createProject(formData)).unwrap();
         toast.success("Project Created successfully!");
-        router.push(`/dashboard/projects/`);
+        router.push(`/${locale}/dashboard/projects/`);
       } catch (error: any) {
         toast.error(error?.message);
         console.error("Error Creating Project:", error);

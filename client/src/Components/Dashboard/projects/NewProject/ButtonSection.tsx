@@ -1,3 +1,4 @@
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { Button, Col, Row } from "reactstrap";
 
@@ -6,6 +7,7 @@ interface ButtonSectionProps {
 }
 
 export const ButtonSection: React.FC<ButtonSectionProps> = ({ slug = "" }) => {
+  const locale = useLocale();
   return (
     <Row>
       <Col>
@@ -15,7 +17,7 @@ export const ButtonSection: React.FC<ButtonSectionProps> = ({ slug = "" }) => {
           </Button>
           <Link
             className="btn btn-danger"
-            href={`${process.env.NEXT_PUBLIC_URI}/dashboard/projects`}
+            href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/projects`}
           >
             Cancel
           </Link>

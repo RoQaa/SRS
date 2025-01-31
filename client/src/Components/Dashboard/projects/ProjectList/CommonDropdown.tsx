@@ -8,6 +8,7 @@ import {
   DropdownMenu,
   DropdownToggle,
 } from "reactstrap";
+import { useLocale } from "next-intl";
 
 interface DashBoardCommonDropdownProps {
   projectSlug: string;
@@ -15,12 +16,14 @@ interface DashBoardCommonDropdownProps {
 }
 
 export const CommonDropdown: React.FC<DashBoardCommonDropdownProps> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   projectSlug,
   projectId,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
   const dispatch = useAppDispatch();
+  const locale = useLocale()
   
   const showWarningAlert = (projectId: string) => {
     SweetAlert.fire({
@@ -66,7 +69,7 @@ export const CommonDropdown: React.FC<DashBoardCommonDropdownProps> = ({
       <DropdownMenu end className="dropdown-menu-end">
         <DropdownItem
           tag="a"
-          href={`${process.env.NEXT_PUBLIC_URI}/dashboard/projects/${projectSlug}?id=${projectId}`}
+          href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/projects/edit?id=${projectId}`}
         >
           Edit
         </DropdownItem>

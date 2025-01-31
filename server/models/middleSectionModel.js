@@ -12,7 +12,14 @@ const middleSectionSchema= new mongoose.Schema({
         type:String,
         required:[true,'middle Section must have titleTwo']
     },
-
+    titleOne_ar:{
+        type:String,
+        required:[true,'middle Section must have titleOne_ar']
+    },
+    titleTwo_ar:{
+        type:String,
+        required:[true,'middle Section must have titleTwo_ar']
+    },
 
 },{
     timestamps:true

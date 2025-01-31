@@ -3,10 +3,12 @@ import Link from "next/link";
 import ReactApexChart from "react-apexcharts";
 import { CommonDropdown } from "../common/CommonDropdown";
 import { selectProjectsByLatest } from "@/Redux/Reducers/ProjectSlice";
+import { useLocale } from "next-intl";
 
 const RecentProjectsTableBody = () => {
   const latestProjects = useAppSelector(selectProjectsByLatest);
   const fourProjects = latestProjects.slice(0, 4);
+  const locale = useLocale();
 
   return (
     <tbody>
@@ -60,7 +62,7 @@ const RecentProjectsTableBody = () => {
           <tr key={index}>
             <td className="px2">
               <Link
-                href={`${process.env.NEXT_PUBLIC_URI}/dashboard/projects/${data.slug}`}
+                href={`${process.env.NEXT_PUBLIC_URI}/${locale}/dashboard/projects/edit?id=${data._id}`}
               >
                 {data.title}
               </Link>

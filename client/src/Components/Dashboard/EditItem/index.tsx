@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect } from "react";
 import { CreateNews } from "@/Constant";
 import {
@@ -14,13 +15,16 @@ import ProductBody from "./ProductBody";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { fetchNewsById } from "@/Redux/Reducers/NewsSlice";
 import { setFormValue } from "@/Redux/Reducers/EditNewsSlice";
+import { useSearchParams } from "next/navigation";
 
-const EditProductContainer = ({ slug }: { slug: string }) => {
+const EditProductContainer = () => {
   const dispatch = useAppDispatch();
   const { currentNews, loading, error } = useAppSelector((state) => state.news);
+  const searchParams = useSearchParams();
+  const slug  = searchParams.get("id");
 
   useEffect(() => {
-    dispatch(fetchNewsById(slug)); // Fetch news by slug
+    dispatch(fetchNewsById(slug as string)); // Fetch news by slug
   }, [dispatch, slug]);
 
   useEffect(() => {
@@ -77,7 +81,7 @@ const EditProductContainer = ({ slug }: { slug: string }) => {
               <h5>{CreateNews}</h5>
             </CardHeader>
             <CardBody>
-              <ProductBody slug={slug} />
+              <ProductBody slug={slug as string} />
             </CardBody>
           </Card>
         </Col>

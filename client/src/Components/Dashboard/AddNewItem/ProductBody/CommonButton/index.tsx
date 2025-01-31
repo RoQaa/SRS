@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button } from "reactstrap";
 import Cookies from "js-cookie";
+import { useLocale } from "next-intl";
 
 const CommonButton = () => {
   const { navId, formValue, tabId } = useAppSelector((state) => state.addNews);
   const dispatch = useAppDispatch();
   const router = useRouter();
-
+  const locale = useLocale();
   const submitFormData = async (formData: FormData) => {
     try {
       const response = await fetch(
@@ -27,7 +28,7 @@ const CommonButton = () => {
 
       if (response.ok) {
         toast.success("Item added successfully!");
-        router.push(`/dashboard/news/`);
+        router.push(`/${locale}/dashboard/news/`);
         dispatch(resetForm()); // Reset the form fields
         dispatch(setNavId(1)); // Reset the form fields
       } else {

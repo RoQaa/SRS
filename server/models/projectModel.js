@@ -46,6 +46,14 @@ const projectSchema = new mongoose.Schema({
         enum:["pending", "in progress", "completed"], 
         required:[true,'project must have state']
     },
+    slug: {
+        type: String,
+        unique: true,
+    },
+    slug_ar: {
+        type: String,
+        unique: true,
+    },
     published: { type: Boolean, default: false }, 
     projectProgress: { type: Number, min: 0, max: 100, required: [true,'must has projectProgress'] }, 
     

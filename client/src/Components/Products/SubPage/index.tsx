@@ -13,19 +13,20 @@ import {
 } from "@/Redux/Reducers/ProductsSlice";
 import { fetchProjects } from "@/Redux/Reducers/ProjectSlice";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 
 interface SingleProductProps {
   locale: string;
   slug: string;
-  id?: string;
 }
 
 const SingleProduct: React.FC<SingleProductProps> = ({
   locale,
   slug,
-  id = "",
 }) => {
   const t = useTranslations("form");
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const { productsData, currentProduct } = useAppSelector(
     (state) => state.products
   );
@@ -33,10 +34,10 @@ const SingleProduct: React.FC<SingleProductProps> = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!currentProduct) dispatch(fetchProductById(id));
-    if (!productsData) dispatch(fetchProducts());
-    if (projectsData.length < 1) dispatch(fetchProjects());
-  }, [currentProduct, dispatch, productsData, projectsData.length, id]);
+    dispatch(fetchProductById(id as string));
+    dispatch(fetchProducts());
+    dispatch(fetchProjects());
+  }, [dispatch, id]);
 
   const publishedProducts =
     productsData && productsData.filter((product) => product.published);

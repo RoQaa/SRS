@@ -11,10 +11,12 @@ import { CardBody, Spinner } from "reactstrap";
 import { DescriptionSection } from "./DescriptionSection";
 import { LinkAndPublishedSection } from "./LinkAndPublishedSection";
 import { fetchValueById, updateValue } from "@/Redux/Reducers/ValuesSlice";
+import { useLocale } from "next-intl";
 
 const EditValuesForm = ({ id }: { id: string }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const locale = useLocale();
   const { selectedValue, isLoading } = useAppSelector((state) => state.values);
 
   useEffect(() => {
@@ -58,7 +60,7 @@ const EditValuesForm = ({ id }: { id: string }) => {
     try {
       await dispatch(updateValue({ updatedValue: formData, id: id })).unwrap();
       toast.success("Value Updated successfully!");
-      router.push("/dashboard/edit-home/values/");
+      router.push(`/${locale}/dashboard/edit-home/values/`);
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message || "Error Updating Value.");
