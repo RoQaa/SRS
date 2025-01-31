@@ -35,7 +35,7 @@ const newSchema = new mongoose.Schema({
     }],
     thumbnail:{
         type: String,
-        required: [true, 'new must has an images']
+      required: [true, 'new must has an images']
     },
     published: {
         type: Boolean,

@@ -1,6 +1,7 @@
-const fs =require('fs');
+const fs = require('fs');
 const multer = require('multer');
 const sharp = require('sharp');
+const path = require("path");
 const New = require('../models/newModel');
 const { catchAsync } = require('../utils/catchAsync');
 const { filterObj } = require(`../utils/filterObj`);
@@ -30,48 +31,44 @@ exports.uploadNewsImages = upload.fields([
 
 // Middleware to resize and retain the original format
 exports.resizeNewsImages = catchAsync(async (req, res, next) => {
-  if (!req.files.thumbnail || !req.files.images) return next();
+  console.log("Files received:", req.files); // ✅ Log incoming files
 
+  if (!req.files || (!req.files.thumbnail && !req.files.images)) return next();
   const timestamp = Date.now();
-  const id = req.user.id; // Assuming the user ID is available from req.user.id
+  const id = req.user?.id; // Ensure ID is available
 
-  // 1) Process Thumbnail Image
-  const bgMetadata = await sharp(req.files.thumbnail[0].buffer).metadata();
-  const bgExt = bgMetadata.format; // Get the original format (e.g., png, jpeg, etc.)
+  // ✅ Check if thumbnail exists before processing
+  if (req.files.thumbnail) {
+    const bgMetadata = await sharp(req.files.thumbnail[0].buffer).metadata();
+    const bgExt = bgMetadata.format;
 
-  const thumbnailFilename = `thumbnail-${id}-${timestamp}.${bgExt}`;
+    const thumbnailFilename = `thumbnail-${id}-${timestamp}.${bgExt}`;
+    await sharp(req.files.thumbnail[0].buffer)
+      .resize(2000, 1333)
+      .toFile(`public/news/thumbnails/${thumbnailFilename}`);
 
-  await sharp(req.files.thumbnail[0].buffer)
-    .resize(2000, 1333) // Resize as necessary
-    .toFile(`public/news/thumbnails/${thumbnailFilename}`);
+    req.body.thumbnail = `public/news/thumbnails/${thumbnailFilename}`;
+  }
 
-  // Save thumbnail image URL
-  req.body.thumbnail = `public/news/thumbnails/${thumbnailFilename}`;
+  // ✅ Check if images exist before processing
+  if (req.files.images) {
+    req.body.images = await Promise.all(
+      req.files.images.map(async (file, i) => {
+        const fileMetadata = await sharp(file.buffer).metadata();
+        const fileExt = fileMetadata.format;
+        const filename = `new-${id}-${timestamp}-${i + 1}.${fileExt}`;
 
-  // 2) Process Additional Images
-  req.body.images = await Promise.all(
-    req.files.images.map(async (file, i) => {
-      const fileMetadata = await sharp(file.buffer).metadata();
-      const fileExt = fileMetadata.format; // Get the original format (e.g., png, jpeg, etc.)
-      const filename = `new-${id}-${timestamp}-${i + 1}.${fileExt}`;
+        await sharp(file.buffer)
+          .resize(2000, 1333)
+          .toFile(`public/news/imgs/${filename}`);
 
-      await sharp(file.buffer)
-        .resize(2000, 1333) // Resize as necessary
-        .toFile(`public/news/imgs/${filename}`);
-
-      // Return the image URL
-      return `public/news/imgs/${filename}`;
-    })
-  );
+        return `public/news/imgs/${filename}`;
+      })
+    );
+  }
 
   next();
 });
-
-
-
-
-
-
 //Controllers
 exports.createNew = catchAsync(async (req, res, next) => {
 
@@ -113,18 +110,24 @@ exports.getOneNew = catchAsync(async (req, res, next) => {
   })
 })
 
-//TODO: update News with files
+
 exports.updateNew = catchAsync(async (req, res, next) => {
+
   //param and token id
-  const filteredBody = filterObj(req.body, 'title', 'title_ar', 'description', 'description_ar', 'images', 'thumbnail', 'published');
-  
-  const doc = await New.findOneAndUpdate({ _id: req.params.id, author: req.user.id }, filteredBody, { new: true, runValidators: true })
+  const doc = await New.findById(req.params.id);
   if (!doc) return next(new AppError(`Data Not Found`, 404))
+
+  const filteredBody = filterObj(req.body, 'title', 'title_ar', 'description', 'description_ar', 'images', 'thumbnail', 'published');
+  if (filteredBody.thumbnail) fs.unlink(`${doc.thumbnail}`, (err) => { console.log("error of removing thumbnail", err) });
+  if (filteredBody.images) filteredBody.images.map(image => { fs.unlink(`${image}`, (err) => { console.log("error of removing images", err) }); })
+
+  Object.assign(doc, filteredBody);
+  await doc.save(); // Save the updated document
+
   res.status(200).json({
     status: true,
     message: "new updated Successfully",
     //doc
-
   })
 })
 
@@ -134,12 +137,12 @@ exports.deleteNew = catchAsync(async (req, res, next) => {
 
 
   if (!doc) return next(new AppError('Data not found', 404));
-  fs.unlink(`${doc.thumbnail}`, (err) => {console.log("error of removing thumbnail",err)});
+  fs.unlink(`${doc.thumbnail}`, (err) => { console.log("error of removing thumbnail", err) });
 
-  doc.images.map(image=>{
-    fs.unlink(`${image}`, (err) => {console.log("error of removing images",err)});
+  doc.images.map(image => {
+    fs.unlink(`${image}`, (err) => { console.log("error of removing images", err) });
   })
- await doc.deleteOne();
+  await doc.deleteOne();
   res.status(200).json({
     status: true,
     message: "New Deleted Successfully",
@@ -147,18 +150,18 @@ exports.deleteNew = catchAsync(async (req, res, next) => {
 });
 
 
-exports.deleteNewByAdmin=catchAsync(async (req, res, next) => {
+exports.deleteNewByAdmin = catchAsync(async (req, res, next) => {
 
   const doc = await New.findById(req.params.id);
 
 
   if (!doc) return next(new AppError('Data not found', 404));
-  fs.unlink(`${doc.thumbnail}`, (err) => {console.log("error of removing thumbnail",err)});
+  fs.unlink(`${doc.thumbnail}`, (err) => { console.log("error of removing thumbnail", err) });
 
-  doc.images.map(image=>{
-    fs.unlink(`${image}`, (err) => {console.log("error of removing images",err)});
+  doc.images.map(image => {
+    fs.unlink(`${image}`, (err) => { console.log("error of removing images", err) });
   })
- await doc.deleteOne();
+  await doc.deleteOne();
   res.status(200).json({
     status: true,
     message: "New Deleted Successfully",

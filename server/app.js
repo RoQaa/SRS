@@ -39,11 +39,9 @@ app.use((req, res, next) => {
 
 //development logging
 if (process.env.NODE_ENV === 'development') {
-  // app.use(morgan('dev'));
+   app.use(morgan('dev'));
   
-  morganBody(app, {
-    logAllReqHeader: true,
-  });
+ // morganBody(app, {logAllReqHeader: true,});
   
   
 }
@@ -60,8 +58,8 @@ const limiter = rateLimit({
 app.use('/api', limiter); // (/api)=> all routes start with /api
 
 //Body parser,reading data from body into req.body
-app.use(express.json()); //middle ware for req,res json files 3and req.body
-
+app.use(express.json(/*{ limit: "10mb" }*/)); //middle ware for req,res json files 3and req.body
+//app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 //Data sanitization against no SQL injection
 app.use(mongoSanitize());
 
@@ -76,7 +74,9 @@ app.use((req, res, next) => {
 
   next();
 });
-
+  app.get('/api',(req,res)=>{
+    res.send("Hello World")
+  })
 app.use('/api/auth',authRouter);
 app.use('/api/users',userRouter);
 app.use('/api/edit-website/news',newRouter);
