@@ -29,11 +29,12 @@ const multerFilter = (req, file, cb) => {
   
   // Middleware to resize and retain the original format
   exports.resizeValuesSectionsImages = catchAsync(async (req, res, next) => {
-    if (!req.files.main || !req.files.rotate) return next();
+    if (!req.files || (!req.files.rotate && !req.files.main)) return next();
   
     const timestamp = Date.now();
     const id = req.user.id; // Assuming the user ID is available from req.user.id
     req.body.images = {};
+    if (req.files.main) {
     // 1) Process Main Image
     const bgMetadataMain = await sharp(req.files.main[0].buffer).metadata();
     const bgExtMain = bgMetadataMain.format; // Get the original format (e.g., png, jpeg, etc.)
@@ -46,7 +47,8 @@ const multerFilter = (req, file, cb) => {
   
     // Save main image URL
     req.body.images.main = `public/valuesSections/mains/${mainFilename}`;
-  
+    }
+    if(req.files.rotate){
     //2) Process Rotate Image
     const bgMetadataRotate = await sharp(req.files.rotate[0].buffer).metadata();
     const bgExtRotate = bgMetadataRotate.format; // Get the original format (e.g., png, jpeg, etc.)
@@ -59,7 +61,7 @@ const multerFilter = (req, file, cb) => {
   
     // Save main image URL
     req.body.images.rotate = `public/valuesSections/rotates/${RotateFilename}`;
-  
+    }
     next();
   });
   

@@ -29,11 +29,11 @@ const multerFilter = (req, file, cb) => {
   
   // Middleware to resize and retain the original format
   exports.resizeScopesImages = catchAsync(async (req, res, next) => {
-    if (!req.files.mainImg || !req.files.iconImg) return next();
+    if (!req.files || (!req.files.mainImg && !req.files.iconImg)) return next();
   
     const timestamp = Date.now();
     const id = req.user.id; // Assuming the user ID is available from req.user.id
-    
+    if (req.files.mainImg){
     // 1) Process MainImg Image
     const bgMetadataMainImg = await sharp(req.files.mainImg[0].buffer).metadata();
     const bgExtMainImg = bgMetadataMainImg.format; // Get the original format (e.g., png, jpeg, etc.)
@@ -46,7 +46,8 @@ const multerFilter = (req, file, cb) => {
   
     // Save mainImg image URL
     req.body.mainImg = `public/scopes/mainImgs/${mainImgFilename}`;
-  
+    }
+    if (req.files.iconImg){
     //2) Process IconImg Image
     const bgMetadataIconImg = await sharp(req.files.iconImg[0].buffer).metadata();
     const bgExtIconImg = bgMetadataIconImg.format; // Get the original format (e.g., png, jpeg, etc.)
@@ -59,7 +60,7 @@ const multerFilter = (req, file, cb) => {
   
     // Save mainImg image URL
     req.body.iconImg = `public/scopes/iconImgs/${IconImgFilename}`;
-  
+    }
     next();
   });
   
