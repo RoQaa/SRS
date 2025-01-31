@@ -28,45 +28,46 @@ const multerFilter = (req, file, cb) => {
     { name: "images", maxCount: 5 },
   ]);
   
-  // Middleware to resize and retain the original format
-  exports.resizeProductsImages = catchAsync(async (req, res, next) => {
-    if (!req.files.thumbnail || !req.files.images) return next();
-  
-    const timestamp = Date.now();
-    const id = req.user.id; // Assuming the user ID is available from req.user.id
-  
-    // 1) Process Thumbnail Image
-    const bgMetadata = await sharp(req.files.thumbnail[0].buffer).metadata();
-    const bgExt = bgMetadata.format; // Get the original format (e.g., png, jpeg, etc.)
-  
-    const thumbnailFilename = `thumbnail-${id}-${timestamp}.${bgExt}`;
-  
-    await sharp(req.files.thumbnail[0].buffer)
-      .resize(2000, 1333) // Resize as necessary
-      .toFile(`public/products/thumbnails/${thumbnailFilename}`);
-  
-    // Save thumbnail image URL
-    req.body.thumbnail = `public/products/thumbnails/${thumbnailFilename}`;
-  
-    // 2) Process Additional Images
-    req.body.images = await Promise.all(
-      req.files.images.map(async (file, i) => {
-        const fileMetadata = await sharp(file.buffer).metadata();
-        const fileExt = fileMetadata.format; // Get the original format (e.g., png, jpeg, etc.)
-        const filename = `product-${id}-${timestamp}-${i + 1}.${fileExt}`;
-  
-        await sharp(file.buffer)
-          .resize(2000, 1333) // Resize as necessary
-          .toFile(`public/products/imgs/${filename}`);
-  
-        // Return the image URL
-        return `public/products/imgs/${filename}`;
-      })
-    );
-  
-    next();
-  });
-  
+ // Middleware to resize and retain the original format
+ exports.resizeNewsImages = catchAsync(async (req, res, next) => {
+   console.log("Files received:", req.files); // ✅ Log incoming files
+ 
+   if (!req.files || (!req.files.thumbnail && !req.files.images)) return next();
+   const timestamp = Date.now();
+   const id = req.user?.id; // Ensure ID is available
+ 
+   // ✅ Check if thumbnail exists before processing
+   if (req.files.thumbnail) {
+     const bgMetadata = await sharp(req.files.thumbnail[0].buffer).metadata();
+     const bgExt = bgMetadata.format;
+ 
+     const thumbnailFilename = `thumbnail-${id}-${timestamp}.${bgExt}`;
+     await sharp(req.files.thumbnail[0].buffer)
+       .resize(2000, 1333)
+       .toFile(`public/products/thumbnails/${thumbnailFilename}`);
+ 
+     req.body.thumbnail = `public/products/thumbnails/${thumbnailFilename}`;
+   }
+ 
+   // ✅ Check if images exist before processing
+   if (req.files.images) {
+     req.body.images = await Promise.all(
+       req.files.images.map(async (file, i) => {
+         const fileMetadata = await sharp(file.buffer).metadata();
+         const fileExt = fileMetadata.format;
+         const filename = `new-${id}-${timestamp}-${i + 1}.${fileExt}`;
+ 
+         await sharp(file.buffer)
+           .resize(2000, 1333)
+           .toFile(`public/products/imgs/${filename}`);
+ 
+         return `public/products/imgs/${filename}`;
+       })
+     );
+   }
+ 
+   next();
+ });
   
 exports.AddProduct=catchAsync(async(req,res,next)=>{
     const data = await Product.create(req.body);
