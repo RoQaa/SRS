@@ -64,6 +64,11 @@ export async function generateStaticParams() {
     }
 
     const { data } = await response.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn("⚠ No scopes data found! Using fallback parameters.");
+      return [{ slug: "default-scope", locale: "en" }];
+    }
     
     // Return both `slug` and `id` for dynamic routes
     return data.flatMap((scope: IScope) => [
