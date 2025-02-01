@@ -14,7 +14,7 @@ const ValuesFormContainer = () => {
         <Col sm="12">
           <Card>
             <CardBody>
-              {id ? <EditValuesForm id={id} /> : <CreateValuesForm />}
+              {id ? <EditValuesForm id={id as string} /> : <CreateValuesForm />}
             </CardBody>
           </Card>
         </Col>

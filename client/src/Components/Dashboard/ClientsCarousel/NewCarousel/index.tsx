@@ -14,7 +14,7 @@ const NewClientsCarouselContainer = () => {
         <Col sm="12">
           <Card>
             <CardBody>
-              {id ? <EditCarouselForm id={id} /> : <CreateNewProjectForm />}
+              {id ? <EditCarouselForm id={id as string} /> : <CreateNewProjectForm />}
             </CardBody>
           </Card>
         </Col>

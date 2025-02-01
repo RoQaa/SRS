@@ -12,7 +12,7 @@ const SeoFormContainer: React.FC= () => {
         <Col sm="12">
           <Card>
             <CardBody>
-              <CreateOrUpdateSeoForm page={page ? page : "" } />
+              <CreateOrUpdateSeoForm page={page ? page as string : "" as string } />
             </CardBody>
           </Card>
         </Col>
