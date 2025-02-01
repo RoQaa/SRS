@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
+  assetPrefix: "/", 
   images:{
     unoptimized: true,
     remotePatterns: [
@@ -15,11 +16,6 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "stagingsrv.gazala.net",
-      },
-      {
-        protocol: "http",
-        hostname: "127.0.0.1",
-        port:"5000",
       },
     ],
   },
