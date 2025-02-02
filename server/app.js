@@ -1,101 +1,87 @@
 const express = require('express');
 const morgan = require('morgan');
-const morganBody = require('morgan-body');
-const path = require('path')
-const rateLimit = require('express-rate-limit'); // security
-const helmet = require('helmet'); // security
-const mongoSanitize = require('express-mongo-sanitize'); // security
-const xss = require('xss-clean'); // security
+const path = require('path');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 const cors = require('cors');
-const AppError = require(`./utils/appError`);
-const authRouter= require('./routes/authRouter');
-const userRouter=require('./routes/userRouter');
-const newRouter=require('./routes/newRouter');
-const counterRouter=require('./routes/counterRouter');
-const slideRouter=require('./routes/slideRouter');
-const productRouter=require('./routes/productRouter');
-const projectRouter= require('./routes/projectRouter');
-const middleSectionRouter=require('./routes/middleSectionRouter');
-const valuesSectionRouter=require('./routes/valuesSectionRouter');
-const scopeRouter=require('./routes/scopeRouter');
-const mediaRouter=require('./routes/mediaRouter');
-const seoRouter=require('./routes/seoRouter');
-const globalErrorHandler = require(`./controllers/errorController`);
+const AppError = require('./utils/appError');
+const globalErrorHandler = require('./controllers/errorController');
+
+const authRouter = require('./routes/authRouter');
+const userRouter = require('./routes/userRouter');
+const newRouter = require('./routes/newRouter');
+const counterRouter = require('./routes/counterRouter');
+const slideRouter = require('./routes/slideRouter');
+const productRouter = require('./routes/productRouter');
+const projectRouter = require('./routes/projectRouter');
+const middleSectionRouter = require('./routes/middleSectionRouter');
+const valuesSectionRouter = require('./routes/valuesSectionRouter');
+const scopeRouter = require('./routes/scopeRouter');
+const mediaRouter = require('./routes/mediaRouter');
+const seoRouter = require('./routes/seoRouter');
+
 const app = express();
 
-// Global MiddleWares
-
-//set security http headers
-app.use(helmet()); // set el htttp headers property
-
+// 🔹 Security Middleware
+app.use(helmet());
 app.use(cors());
-app.options('*', cors())
+app.options('*', cors());
 
-// Poclicy for blocking images
-app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-  next();
-});
-
-//development logging
+// 🔹 Logging (Only in Development Mode)
 if (process.env.NODE_ENV === 'development') {
    app.use(morgan('dev'));
-  
- // morganBody(app, {logAllReqHeader: true,});
-  
-  
 }
 
-//Limit requests from same API
-
+// 🔹 Rate Limiting
 const limiter = rateLimit({
   max: 1000,
   windowMs: 60 * 60 * 1000,
-  message: 'too many requests please try again later',
+  message: 'Too many requests, please try again later',
 });
+app.use('/api', limiter);
 
-
-app.use('/api', limiter); // (/api)=> all routes start with /api
-
-//Body parser,reading data from body into req.body
-app.use(express.json(/*{ limit: "10mb" }*/)); //middle ware for req,res json files 3and req.body
-//app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-//Data sanitization against no SQL injection
+// 🔹 Security: Prevent NoSQL Injection & XSS Attacks
+app.use(express.json());
 app.use(mongoSanitize());
-
-//Data sanitization against cross site scripting attacks (XSS)
 app.use(xss());
 
+// 🔹 Serve Public Files (Images, etc.)
 app.use('/api/public', express.static(path.join(__dirname, 'public')));
 
-
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-
-  next();
+// 🔹 Test API Route
+app.get('/api', (req, res) => {
+  res.send('Hello World');
 });
-  app.get('/api',(req,res)=>{
-    res.send("Hello World")
-  })
-app.use('/api/auth',authRouter);
-app.use('/api/users',userRouter);
-app.use('/api/edit-website/news',newRouter);
-app.use('/api/edit-website/counter',counterRouter);
-app.use('/api/edit-website/slide',slideRouter);
-app.use('/api/edit-website/products',productRouter);
-app.use('/api/edit-website/projects',projectRouter);
-app.use('/api/edit-website/middle-section',middleSectionRouter);
-app.use('/api/edit-website/values',valuesSectionRouter);
-app.use('/api/edit-website/scopes',scopeRouter);
-app.use('/api/edit-website/media',mediaRouter);
-app.use('/api/seo',seoRouter);
+
+// 🔹 API Routes
+app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
+app.use('/api/edit-website/news', newRouter);
+app.use('/api/edit-website/counter', counterRouter);
+app.use('/api/edit-website/slide', slideRouter);
+app.use('/api/edit-website/products', productRouter);
+app.use('/api/edit-website/projects', projectRouter);
+app.use('/api/edit-website/middle-section', middleSectionRouter);
+app.use('/api/edit-website/values', valuesSectionRouter);
+app.use('/api/edit-website/scopes', scopeRouter);
+app.use('/api/edit-website/media', mediaRouter);
+app.use('/api/seo', seoRouter);
+
+// 🔹 Serve Next.js Frontend
+const frontendPath = path.join(__dirname,`${process.env.FRONT_PATH}`);
+app.use(express.static(frontendPath));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'en.html'));
+});
+
+// 🔹 Handle Unknown Routes
 app.all('*', (req, res, next) => {
-
-  next(
-    new AppError(`Can't find the url ${req.originalUrl} on this server`, 404)
-  );
+  next(new AppError(`Can't find the URL ${req.originalUrl} on this server`, 404));
 });
 
+// 🔹 Global Error Handler
 app.use(globalErrorHandler);
 
 module.exports = app;
