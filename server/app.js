@@ -70,7 +70,7 @@ app.use('/api/edit-website/media', mediaRouter);
 app.use('/api/seo', seoRouter);
 
 // 🔹 Serve Next.js Frontend
-const frontendPath = path.join(__dirname,`${process.env.FRONT_PATH}`);
+const frontendPath = path.join(__dirname, '../client/out');
 app.use(express.static(frontendPath));
 app.get('*', (req, res) => {
   res.sendFile(path.join(frontendPath, 'en.html'));
